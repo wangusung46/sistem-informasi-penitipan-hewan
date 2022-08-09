@@ -1,10 +1,114 @@
 package penitipanhewan.view.hewan;
 
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import penitipanhewan.model.hewan.Hewan;
+import penitipanhewan.model.hewan.HewanJdbc;
+import penitipanhewan.model.hewan.HewanJdbcImplement;
+import penitipanhewan.view.menu.FormMenu;
+
 public class FormHewan extends javax.swing.JFrame {
+    
+    private final HewanJdbc hewanJdbc;
+    private Boolean clickTable;
+    private DefaultTableModel defaultTableModel;
 
     public FormHewan() {
         initComponents();
+        hewanJdbc = new HewanJdbcImplement();
+        initTable();
+        loadTable();
     }
+    
+    private void initTable() {
+        defaultTableModel = new DefaultTableModel();
+        defaultTableModel.addColumn("No");
+        defaultTableModel.addColumn("Jenis");        
+        defaultTableModel.addColumn("Ukuran");        
+        defaultTableModel.addColumn("Harga");           
+        tabelHewan.setModel(defaultTableModel);
+    }
+    
+    private void loadTable() {
+        defaultTableModel.getDataVector().removeAllElements();
+        defaultTableModel.fireTableDataChanged();
+        List<Hewan> responses = hewanJdbc.selectAll();
+        if (responses != null) {
+            Object[] objects = new Object[5];
+            for (Hewan response : responses) {
+                objects[0] = response.getId();
+                objects[2] = response.getJenis();                
+                objects[3] = response.getUkuran();                
+                objects[4] = response.getHarga();                        
+                defaultTableModel.addRow(objects);
+            }
+            clickTable = false;
+        }
+    }
+    
+    private void clickTable() {
+        txtJenis.setText(defaultTableModel.getValueAt(tabelHewan.getSelectedRow(), 1).toString());
+        cbxUkuran.setSelectedItem(defaultTableModel.getValueAt(tabelHewan.getSelectedRow(), 2).toString());
+        txtHarga.setText(defaultTableModel.getValueAt(tabelHewan.getSelectedRow(), 3).toString());        
+        clickTable = true;
+    }
+    
+    private void empty() {
+        txtJenis.setText("");        
+        cbxUkuran.setSelectedItem("");        
+        txtHarga.setText("");       
+    }
+    
+    private void performSave() {
+        if (cbxUkuran.getSelectedItem()!= null) {
+            if (JOptionPane.showConfirmDialog(null, "Do you want to save new data ?", "Info", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
+                Hewan request = new Hewan();
+                request.setId(0L);
+                request.setJenis(txtJenis.getText()); 
+                request.setUkuran(cbxUkuran.getSelectedItem().toString()); 
+                request.setHarga(Long.parseLong(txtHarga.getText()));                              
+                hewanJdbc.insert(request);
+                loadTable();
+                empty();
+                JOptionPane.showMessageDialog(null, "Successfully save data", "Success", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Data not empty", "Warning", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    
+    private void performUpdate() {
+        if (cbxUkuran.getSelectedItem()!= null) {
+            if (JOptionPane.showConfirmDialog(null, "Do you want to update new data ?", "Info", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
+                Hewan request = new Hewan();
+                request.setId(0L);
+                request.setJenis(txtJenis.getText()); 
+                request.setUkuran(cbxUkuran.getSelectedItem().toString()); 
+                request.setHarga(Long.parseLong(txtHarga.getText()));                              
+                hewanJdbc.insert(request);
+                loadTable();
+                empty();
+                JOptionPane.showMessageDialog(null, "Successfully update data", "Success", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Data not empty", "Warning", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    
+    private void performDelete() {
+        if (clickTable) {
+            if (JOptionPane.showConfirmDialog(null, "Do you want to delete data by id " + defaultTableModel.getValueAt(tabelHewan.getSelectedRow(), 0).toString() + " ?", "Warning", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
+                hewanJdbc.delete(Long.parseLong(defaultTableModel.getValueAt(tabelHewan.getSelectedRow(), 0).toString()));
+                loadTable();
+                empty();
+                JOptionPane.showMessageDialog(null, "Successfully delete data", "Success", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Delete or edit must click table", "Warning", JOptionPane.WARNING_MESSAGE);
+        }
+    } 
+
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -20,11 +124,11 @@ public class FormHewan extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         txtJenis = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        cbxUkuran = new javax.swing.JComboBox<>();
         jLabel5 = new javax.swing.JLabel();
         txtHarga = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tabelHarga = new javax.swing.JTable();
+        tabelHewan = new javax.swing.JTable();
         btnInsert = new javax.swing.JButton();
         btnUpdate = new javax.swing.JButton();
         btnClear = new javax.swing.JButton();
@@ -52,7 +156,12 @@ public class FormHewan extends javax.swing.JFrame {
         btnLogout.setBackground(new java.awt.Color(255, 0, 51));
         btnLogout.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnLogout.setForeground(new java.awt.Color(255, 255, 255));
-        btnLogout.setText("Logout");
+        btnLogout.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penitipanhewan/image/logout.png"))); // NOI18N
+        btnLogout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLogoutActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -94,10 +203,10 @@ public class FormHewan extends javax.swing.JFrame {
         jLabel4.setForeground(new java.awt.Color(0, 0, 0));
         jLabel4.setText("Ukuran :");
 
-        jComboBox1.setBackground(new java.awt.Color(153, 153, 153));
-        jComboBox1.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
-        jComboBox1.setForeground(new java.awt.Color(255, 255, 255));
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5" }));
+        cbxUkuran.setBackground(new java.awt.Color(153, 153, 153));
+        cbxUkuran.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
+        cbxUkuran.setForeground(new java.awt.Color(255, 255, 255));
+        cbxUkuran.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5" }));
 
         jLabel5.setBackground(new java.awt.Color(153, 153, 153));
         jLabel5.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
@@ -108,7 +217,7 @@ public class FormHewan extends javax.swing.JFrame {
         txtHarga.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
         txtHarga.setForeground(new java.awt.Color(255, 255, 255));
 
-        tabelHarga.setModel(new javax.swing.table.DefaultTableModel(
+        tabelHewan.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -116,27 +225,52 @@ public class FormHewan extends javax.swing.JFrame {
                 "Id", "Jenis", "Ukuran", "Harga"
             }
         ));
-        jScrollPane1.setViewportView(tabelHarga);
+        tabelHewan.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tabelHewanMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tabelHewan);
 
         btnInsert.setBackground(new java.awt.Color(51, 255, 51));
         btnInsert.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
         btnInsert.setForeground(new java.awt.Color(255, 255, 255));
         btnInsert.setText("Insert");
+        btnInsert.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnInsertActionPerformed(evt);
+            }
+        });
 
         btnUpdate.setBackground(new java.awt.Color(51, 255, 51));
         btnUpdate.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
         btnUpdate.setForeground(new java.awt.Color(255, 255, 255));
         btnUpdate.setText("Update");
+        btnUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateActionPerformed(evt);
+            }
+        });
 
         btnClear.setBackground(new java.awt.Color(51, 255, 51));
         btnClear.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
         btnClear.setForeground(new java.awt.Color(255, 255, 255));
         btnClear.setText("Clear");
+        btnClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearActionPerformed(evt);
+            }
+        });
 
         btnDelete.setBackground(new java.awt.Color(51, 255, 51));
         btnDelete.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
         btnDelete.setForeground(new java.awt.Color(255, 255, 255));
         btnDelete.setText("Delete");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penitipanhewan/image/insert.png"))); // NOI18N
 
@@ -176,7 +310,7 @@ public class FormHewan extends javax.swing.JFrame {
                             .addComponent(txtJenis)
                             .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(cbxUkuran, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(txtHarga, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 460, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -195,7 +329,7 @@ public class FormHewan extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(cbxUkuran, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -273,6 +407,31 @@ public class FormHewan extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
+       new FormMenu().setVisible(true);
+       dispose();
+    }//GEN-LAST:event_btnLogoutActionPerformed
+
+    private void btnInsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInsertActionPerformed
+        performSave();
+    }//GEN-LAST:event_btnInsertActionPerformed
+
+    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
+        performUpdate();
+    }//GEN-LAST:event_btnUpdateActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        performDelete();
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
+        empty();
+    }//GEN-LAST:event_btnClearActionPerformed
+
+    private void tabelHewanMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabelHewanMouseClicked
+        clickTable();
+    }//GEN-LAST:event_tabelHewanMouseClicked
+
     public static void main(String args[]) {
         
         try {
@@ -306,7 +465,7 @@ public class FormHewan extends javax.swing.JFrame {
     private javax.swing.JButton btnInsert;
     private javax.swing.JButton btnLogout;
     private javax.swing.JButton btnUpdate;
-    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JComboBox<String> cbxUkuran;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -321,7 +480,7 @@ public class FormHewan extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable tabelHarga;
+    private javax.swing.JTable tabelHewan;
     private javax.swing.JTextField txtHarga;
     private javax.swing.JTextField txtJenis;
     // End of variables declaration//GEN-END:variables

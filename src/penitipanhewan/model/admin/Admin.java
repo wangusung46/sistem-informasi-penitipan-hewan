@@ -7,6 +7,7 @@ public class Admin {
     private String userName;
     private String password;
     private String role;
+    public static String userLogin = "Admin";
 
     public Long getId() {
         return id;

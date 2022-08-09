@@ -1,10 +1,134 @@
 package penitipanhewan.view.paket;
 
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import penitipanhewan.model.hewan.Hewan;
+import penitipanhewan.model.hewan.HewanJdbc;
+import penitipanhewan.model.hewan.HewanJdbcImplement;
+import penitipanhewan.model.makanan.Makanan;
+import penitipanhewan.model.makanan.MakananJdbc;
+import penitipanhewan.model.makanan.MakananJdbcImplement;
+import penitipanhewan.model.paket.Paket;
+import penitipanhewan.model.paket.PaketJdbc;
+import penitipanhewan.model.paket.PaketJdbcImplement;
+import penitipanhewan.view.menu.FormMenu;
+
 public class FormPaket extends javax.swing.JFrame {
+    
+    private final PaketJdbc paketJdbc;
+    private final HewanJdbc hewanJdbc;
+    private final MakananJdbc makananJdbc;
+    private Boolean clickTable;
+    private DefaultTableModel defaultTableModel;
 
     public FormPaket() {
         initComponents();
+        paketJdbc = new PaketJdbcImplement();
+        hewanJdbc = new HewanJdbcImplement();
+        makananJdbc = new MakananJdbcImplement();        
+        initTable();
+        loadTable();
+        loadComboBoxHewan();
+        loadComboBoxMakanan();           
     }
+    
+    private void initTable() {
+        defaultTableModel = new DefaultTableModel();
+        defaultTableModel.addColumn("No");
+        defaultTableModel.addColumn("ID Hewan");
+        defaultTableModel.addColumn("ID Makanan");       
+        tabelPaket.setModel(defaultTableModel);
+    }
+    
+    private void loadTable() {
+        defaultTableModel.getDataVector().removeAllElements();
+        defaultTableModel.fireTableDataChanged();
+        List<Paket> responses = paketJdbc.selectAll();
+        if (responses != null) {
+            Object[] objects = new Object[5];
+            for (Paket response : responses) {
+                objects[0] = response.getId();
+                objects[1] = response.getIdHewan();
+                objects[2] = response.getIdMakanan();                
+                defaultTableModel.addRow(objects);
+            }
+            clickTable = false;
+        }
+    }
+
+    private void loadComboBoxHewan() {
+        List<Hewan> responses = hewanJdbc.selectAll();
+        for (Hewan response : responses) {
+            cbxIdHewan.addItem(String.valueOf(response.getId()));
+        }
+    }
+
+    private void loadComboBoxMakanan() {
+        List<Makanan> responses = makananJdbc.selectAll();
+        for (Makanan response : responses) {
+            cbxIdMakanan.addItem(String.valueOf(response.getId()));
+        }
+    }
+
+    private void clickTable() {
+        cbxIdHewan.setSelectedItem(defaultTableModel.getValueAt(tabelPaket.getSelectedRow(), 1).toString());
+        cbxIdMakanan.setSelectedItem(defaultTableModel.getValueAt(tabelPaket.getSelectedRow(), 2).toString());        
+        clickTable = true;
+    }
+    
+    private void empty() {
+        cbxIdHewan.setSelectedIndex(0);  
+        cbxIdMakanan.setSelectedIndex(0);           
+    }
+    
+    private void performSave() {
+        if (cbxIdHewan.getSelectedItem()!= null) {
+            if (JOptionPane.showConfirmDialog(null, "Do you want to save new data ?", "Info", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
+                Paket request = new Paket();
+                request.setId(0L);
+                request.setIdHewan(Long.parseLong(cbxIdHewan.getSelectedItem().toString()));
+                request.setIdMakanan(Long.parseLong(cbxIdMakanan.getSelectedItem().toString()));                            
+                paketJdbc.insert(request);
+                loadTable();
+                empty();
+                JOptionPane.showMessageDialog(null, "Successfully save data", "Success", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Data not empty", "Warning", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    
+    private void performUpdate() {
+        if (cbxIdHewan.getSelectedItem()!= null) {
+            if (JOptionPane.showConfirmDialog(null, "Do you want to update new data ?", "Info", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
+                Paket request = new Paket();
+                request.setId(0L);
+                request.setIdHewan(Long.parseLong(cbxIdHewan.getSelectedItem().toString()));
+                request.setIdMakanan(Long.parseLong(cbxIdMakanan.getSelectedItem().toString()));                            
+                paketJdbc.insert(request);
+                loadTable();
+                empty();
+                JOptionPane.showMessageDialog(null, "Successfully update data", "Success", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Data not empty", "Warning", JOptionPane.WARNING_MESSAGE);
+        }
+    }   
+    
+    private void performDelete() {
+        if (clickTable) {
+            if (JOptionPane.showConfirmDialog(null, "Do you want to delete data by id " + defaultTableModel.getValueAt(tabelPaket.getSelectedRow(), 0).toString() + " ?", "Warning", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
+                paketJdbc.delete(Long.parseLong(defaultTableModel.getValueAt(tabelPaket.getSelectedRow(), 0).toString()));
+                loadTable();
+                empty();
+                JOptionPane.showMessageDialog(null, "Successfully delete data", "Success", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Delete or edit must click table", "Warning", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -50,7 +174,12 @@ public class FormPaket extends javax.swing.JFrame {
         btnLogout.setBackground(new java.awt.Color(255, 0, 51));
         btnLogout.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnLogout.setForeground(new java.awt.Color(255, 255, 255));
-        btnLogout.setText("Logout");
+        btnLogout.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penitipanhewan/image/logout.png"))); // NOI18N
+        btnLogout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLogoutActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -97,22 +226,42 @@ public class FormPaket extends javax.swing.JFrame {
                 "Id", "Id Hewan", "Id Makanan"
             }
         ));
+        tabelPaket.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tabelPaketMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tabelPaket);
 
         btnInsert.setBackground(new java.awt.Color(51, 51, 255));
         btnInsert.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
         btnInsert.setForeground(new java.awt.Color(255, 255, 255));
         btnInsert.setText("Insert");
+        btnInsert.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnInsertActionPerformed(evt);
+            }
+        });
 
         btnUpdate.setBackground(new java.awt.Color(51, 51, 255));
         btnUpdate.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
         btnUpdate.setForeground(new java.awt.Color(255, 255, 255));
         btnUpdate.setText("Update");
+        btnUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateActionPerformed(evt);
+            }
+        });
 
         btnClear.setBackground(new java.awt.Color(51, 51, 255));
         btnClear.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
         btnClear.setForeground(new java.awt.Color(255, 255, 255));
         btnClear.setText("Clear");
+        btnClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearActionPerformed(evt);
+            }
+        });
 
         btnDelete.setBackground(new java.awt.Color(51, 51, 255));
         btnDelete.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
@@ -267,8 +416,29 @@ public class FormPaket extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        // TODO add your handling code here:
+       performDelete();
     }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
+        new FormMenu().setVisible(true);
+        dispose();
+    }//GEN-LAST:event_btnLogoutActionPerformed
+
+    private void btnInsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInsertActionPerformed
+        performSave();
+    }//GEN-LAST:event_btnInsertActionPerformed
+
+    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
+        performUpdate();
+    }//GEN-LAST:event_btnUpdateActionPerformed
+
+    private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
+        empty();
+    }//GEN-LAST:event_btnClearActionPerformed
+
+    private void tabelPaketMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabelPaketMouseClicked
+        clickTable();
+    }//GEN-LAST:event_tabelPaketMouseClicked
 
     public static void main(String args[]) {
         

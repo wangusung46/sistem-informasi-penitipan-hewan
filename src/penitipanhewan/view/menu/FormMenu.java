@@ -1,9 +1,30 @@
 package penitipanhewan.view.menu;
 
+import penitipanhewan.model.admin.Admin;
+import penitipanhewan.view.hewan.FormHewan;
+import penitipanhewan.view.makanan.FormMakanan;
+import penitipanhewan.view.paket.FormPaket;
+import penitipanhewan.view.penitipan.FormPenitipan;
+import penitipanhewan.view.report.FormReport;
+
 public class FormMenu extends javax.swing.JFrame {
 
     public FormMenu() {
         initComponents();
+        switch (Admin.userLogin) {
+            case "Admin":
+                break;
+            case "Pemilik":
+                btnHewan.setEnabled(false);
+                btnMakanan.setEnabled(false);
+                btnPaket.setEnabled(false);
+                btnPelanggan.setEnabled(false);
+                btnPenitipan.setEnabled(false);
+                break;
+            default:
+                dispose();
+                break;
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -42,6 +63,11 @@ public class FormMenu extends javax.swing.JFrame {
         btnLogout.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnLogout.setForeground(new java.awt.Color(255, 255, 255));
         btnLogout.setText("Logout");
+        btnLogout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLogoutActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -74,31 +100,61 @@ public class FormMenu extends javax.swing.JFrame {
         btnHewan.setFont(new java.awt.Font("Arial", 1, 24)); // NOI18N
         btnHewan.setForeground(new java.awt.Color(255, 255, 255));
         btnHewan.setText("Hewan");
+        btnHewan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHewanActionPerformed(evt);
+            }
+        });
 
         btnMakanan.setBackground(new java.awt.Color(51, 51, 255));
         btnMakanan.setFont(new java.awt.Font("Arial", 1, 24)); // NOI18N
         btnMakanan.setForeground(new java.awt.Color(255, 255, 255));
         btnMakanan.setText("Makanan");
+        btnMakanan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMakananActionPerformed(evt);
+            }
+        });
 
         btnPenitipan.setBackground(new java.awt.Color(51, 51, 255));
         btnPenitipan.setFont(new java.awt.Font("Arial", 1, 24)); // NOI18N
         btnPenitipan.setForeground(new java.awt.Color(255, 255, 255));
         btnPenitipan.setText("Penitipan");
+        btnPenitipan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPenitipanActionPerformed(evt);
+            }
+        });
 
         btnPaket.setBackground(new java.awt.Color(51, 51, 255));
         btnPaket.setFont(new java.awt.Font("Arial", 1, 24)); // NOI18N
         btnPaket.setForeground(new java.awt.Color(255, 255, 255));
         btnPaket.setText("Paket");
+        btnPaket.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPaketActionPerformed(evt);
+            }
+        });
 
         btnPelanggan.setBackground(new java.awt.Color(51, 51, 255));
         btnPelanggan.setFont(new java.awt.Font("Arial", 1, 24)); // NOI18N
         btnPelanggan.setForeground(new java.awt.Color(255, 255, 255));
         btnPelanggan.setText("Pelanggan");
+        btnPelanggan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPelangganActionPerformed(evt);
+            }
+        });
 
         btnReport.setBackground(new java.awt.Color(51, 51, 255));
         btnReport.setFont(new java.awt.Font("Arial", 1, 24)); // NOI18N
         btnReport.setForeground(new java.awt.Color(255, 255, 255));
         btnReport.setText("Report");
+        btnReport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReportActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -121,17 +177,17 @@ public class FormMenu extends javax.swing.JFrame {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(42, 42, 42)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnHewan, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnHewan, javax.swing.GroupLayout.DEFAULT_SIZE, 47, Short.MAX_VALUE)
+                    .addComponent(btnPelanggan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(35, 35, 35)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnPenitipan, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnMakanan, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnMakanan, javax.swing.GroupLayout.DEFAULT_SIZE, 47, Short.MAX_VALUE)
+                    .addComponent(btnPenitipan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnPaket, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnReport, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnPaket, javax.swing.GroupLayout.DEFAULT_SIZE, 47, Short.MAX_VALUE)
+                    .addComponent(btnReport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(45, 45, 45))
         );
 
@@ -158,7 +214,7 @@ public class FormMenu extends javax.swing.JFrame {
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -193,6 +249,41 @@ public class FormMenu extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
+        new FormLogin().setVisible(true);
+        dispose();
+    }//GEN-LAST:event_btnLogoutActionPerformed
+
+    private void btnHewanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHewanActionPerformed
+       new FormHewan().setVisible(true);
+       dispose();
+    }//GEN-LAST:event_btnHewanActionPerformed
+
+    private void btnMakananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMakananActionPerformed
+       new FormMakanan().setVisible(true);
+       dispose();
+    }//GEN-LAST:event_btnMakananActionPerformed
+
+    private void btnPaketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPaketActionPerformed
+       new FormPaket().setVisible(true);
+       dispose();
+    }//GEN-LAST:event_btnPaketActionPerformed
+
+    private void btnPelangganActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPelangganActionPerformed
+       new FormPaket().setVisible(true);
+       dispose();
+    }//GEN-LAST:event_btnPelangganActionPerformed
+
+    private void btnPenitipanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPenitipanActionPerformed
+       new FormPenitipan().setVisible(true);
+       dispose();
+    }//GEN-LAST:event_btnPenitipanActionPerformed
+
+    private void btnReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportActionPerformed
+       new FormReport().setVisible(true);
+       dispose();
+    }//GEN-LAST:event_btnReportActionPerformed
+
     public static void main(String args[]) {
         
         try {
@@ -211,8 +302,7 @@ public class FormMenu extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(FormMenu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-
+       
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {

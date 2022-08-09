@@ -1,9 +1,151 @@
 package penitipanhewan.view.penitipan;
 
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import penitipanhewan.model.paket.Paket;
+import penitipanhewan.model.paket.PaketJdbc;
+import penitipanhewan.model.paket.PaketJdbcImplement;
+import penitipanhewan.model.pelanggan.Pelanggan;
+import penitipanhewan.model.pelanggan.PelangganJdbc;
+import penitipanhewan.model.pelanggan.PelangganJdbcImplement;
+import penitipanhewan.model.penitipan.Penitipan;
+import penitipanhewan.model.penitipan.PenitipanJdbc;
+import penitipanhewan.model.penitipan.PenitipanJdbcImplement;
+import penitipanhewan.view.menu.FormMenu;
+
 public class FormPenitipan extends javax.swing.JFrame {
+    
+    private final PenitipanJdbc penitipanJdbc;
+    private final PelangganJdbc pelangganJdbc;
+    private final PaketJdbc paketJdbc;
+    private Boolean clickTable;
+    private DefaultTableModel defaultTableModel;
 
     public FormPenitipan() {
         initComponents();
+        penitipanJdbc = new PenitipanJdbcImplement();
+        paketJdbc = new PaketJdbcImplement();
+        pelangganJdbc = new PelangganJdbcImplement();        
+        initTable();
+        loadTable();
+        loadComboBoxPaket();
+        loadComboBoxPelanggan();       
+    }
+    
+    private void initTable() {
+        defaultTableModel = new DefaultTableModel();
+        defaultTableModel.addColumn("No");
+        defaultTableModel.addColumn("ID Paket");
+        defaultTableModel.addColumn("ID Pelanggan");        
+        defaultTableModel.addColumn("Jumlah");        
+        defaultTableModel.addColumn("Jam");        
+        defaultTableModel.addColumn("Tangggal");        
+        tabelPenitipan.setModel(defaultTableModel);
+    }
+    
+    private void loadTable() {
+        defaultTableModel.getDataVector().removeAllElements();
+        defaultTableModel.fireTableDataChanged();
+        List<Penitipan> responses = penitipanJdbc.selectAll();
+        if (responses != null) {
+            Object[] objects = new Object[10];
+            for (Penitipan response : responses) {
+                objects[0] = response.getId();
+                objects[1] = response.getIdPaket();
+                objects[2] = response.getIdPelanggan();                
+                objects[3] = response.getJumlah();                
+                objects[4] = response.getJam();                
+                objects[5] = response.getTanggal();                
+                defaultTableModel.addRow(objects);
+            }
+            clickTable = false;
+        }
+    }
+    
+    private void loadComboBoxPaket() {
+        List<Paket> responses = paketJdbc.selectAll();
+        for (Paket response : responses) {
+            cbxIdPaket.addItem(String.valueOf(response.getId()));
+        }
+    }
+
+    private void loadComboBoxPelanggan() {
+        List<Pelanggan> responses = pelangganJdbc.selectAll();
+        for (Pelanggan response : responses) {
+            cbxIdPelanggan.addItem(String.valueOf(response.getId()));
+        }
+    }
+
+    private void clickTable() {
+        cbxIdPaket.setSelectedItem(defaultTableModel.getValueAt(tabelPenitipan.getSelectedRow(), 1).toString());
+        cbxIdPelanggan.setSelectedItem(defaultTableModel.getValueAt(tabelPenitipan.getSelectedRow(), 2).toString());        
+        clickTable = true;
+    }
+    
+    private void empty() {
+        cbxIdPaket.setSelectedIndex(0);  
+        cbxIdPelanggan.setSelectedIndex(0);  
+        txtJumlah.setText("");     
+        txtJam.setText("");     
+        datePenitipan.setDate(null);     
+    }
+    
+    private void performSave() {
+        if (datePenitipan.getDate() != null) {
+            if (JOptionPane.showConfirmDialog(null, "Do you want to save new data ?", "Info", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
+                Penitipan request = new Penitipan();
+                request.setId(0L);
+                request.setIdPaket(Long.parseLong(cbxIdPaket.getSelectedItem().toString()));
+                request.setIdPelanggan(Long.parseLong(cbxIdPelanggan.getSelectedItem().toString()));
+                request.setJumlah(Long.parseLong(txtJumlah.getText()));
+                request.setJam(Long.parseLong(txtJam.getText()));
+                request.setTanggal(datePenitipan.getDate());               
+                penitipanJdbc.insert(request);
+                loadTable();
+                empty();
+                JOptionPane.showMessageDialog(null, "Successfully save data", "Success", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Data not empty", "Warning", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    
+     private void performUpdate() {
+        if (clickTable) {
+            if (datePenitipan.getDate() != null) {
+                if (JOptionPane.showConfirmDialog(null, "Do you want to update data by id " + defaultTableModel.getValueAt(tabelPenitipan.getSelectedRow(), 0).toString() + " ?", "Warning", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
+                    Penitipan request = new Penitipan();
+                    request.setId(Long.parseLong(defaultTableModel.getValueAt(tabelPenitipan.getSelectedRow(), 0).toString()));
+                    request.setIdPaket(Long.parseLong(cbxIdPaket.getSelectedItem().toString()));
+                    request.setIdPelanggan(Long.parseLong(cbxIdPelanggan.getSelectedItem().toString()));
+                    request.setJumlah(Long.parseLong(txtJumlah.getText()));
+                    request.setJam(Long.parseLong(txtJam.getText()));
+                    request.setTanggal(datePenitipan.getDate());               
+                    penitipanJdbc.insert(request);
+                    loadTable();
+                    empty();
+                    JOptionPane.showMessageDialog(null, "Successfully update data", "Success", JOptionPane.INFORMATION_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Data not empty", "Warning", JOptionPane.WARNING_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Delete or edit must click table", "Warning", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+     
+      private void performDelete() {
+        if (clickTable) {
+            if (JOptionPane.showConfirmDialog(null, "Do you want to delete data by id " + defaultTableModel.getValueAt(tabelPenitipan.getSelectedRow(), 0).toString() + " ?", "Warning", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
+                penitipanJdbc.delete(Long.parseLong(defaultTableModel.getValueAt(tabelPenitipan.getSelectedRow(), 0).toString()));
+                loadTable();
+                empty();
+                JOptionPane.showMessageDialog(null, "Successfully delete data", "Success", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Delete or edit must click table", "Warning", JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -20,7 +162,7 @@ public class FormPenitipan extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        txtAlamat = new javax.swing.JTextField();
+        txtJumlah = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         tabelPenitipan = new javax.swing.JTable();
         btnInsert = new javax.swing.JButton();
@@ -28,7 +170,7 @@ public class FormPenitipan extends javax.swing.JFrame {
         btnClear = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
-        txtAlamat1 = new javax.swing.JTextField();
+        txtJam = new javax.swing.JTextField();
         cbxIdPaket = new javax.swing.JComboBox<>();
         cbxIdPelanggan = new javax.swing.JComboBox<>();
         jLabel7 = new javax.swing.JLabel();
@@ -56,7 +198,12 @@ public class FormPenitipan extends javax.swing.JFrame {
         btnLogout.setBackground(new java.awt.Color(255, 0, 51));
         btnLogout.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnLogout.setForeground(new java.awt.Color(255, 255, 255));
-        btnLogout.setText("Logout");
+        btnLogout.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penitipanhewan/image/logout.png"))); // NOI18N
+        btnLogout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLogoutActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -99,9 +246,9 @@ public class FormPenitipan extends javax.swing.JFrame {
         jLabel5.setForeground(new java.awt.Color(0, 0, 0));
         jLabel5.setText("Jumlah     :");
 
-        txtAlamat.setBackground(new java.awt.Color(153, 153, 153));
-        txtAlamat.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
-        txtAlamat.setForeground(new java.awt.Color(255, 255, 255));
+        txtJumlah.setBackground(new java.awt.Color(153, 153, 153));
+        txtJumlah.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
+        txtJumlah.setForeground(new java.awt.Color(255, 255, 255));
 
         tabelPenitipan.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -111,36 +258,61 @@ public class FormPenitipan extends javax.swing.JFrame {
                 "Id", "Id Paket", "Id Pelanggan", "Jumlah", "Jam", "Tanggal"
             }
         ));
+        tabelPenitipan.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tabelPenitipanMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tabelPenitipan);
 
         btnInsert.setBackground(new java.awt.Color(0, 102, 255));
         btnInsert.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
         btnInsert.setForeground(new java.awt.Color(255, 255, 255));
         btnInsert.setText("Insert");
+        btnInsert.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnInsertActionPerformed(evt);
+            }
+        });
 
         btnUpdate.setBackground(new java.awt.Color(0, 102, 255));
         btnUpdate.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
         btnUpdate.setForeground(new java.awt.Color(255, 255, 255));
         btnUpdate.setText("Update");
+        btnUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateActionPerformed(evt);
+            }
+        });
 
         btnClear.setBackground(new java.awt.Color(0, 102, 255));
         btnClear.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
         btnClear.setForeground(new java.awt.Color(255, 255, 255));
         btnClear.setText("Clear");
+        btnClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearActionPerformed(evt);
+            }
+        });
 
         btnDelete.setBackground(new java.awt.Color(0, 102, 255));
         btnDelete.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
         btnDelete.setForeground(new java.awt.Color(255, 255, 255));
         btnDelete.setText("Delete");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         jLabel6.setBackground(new java.awt.Color(153, 153, 153));
         jLabel6.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(0, 0, 0));
         jLabel6.setText("Jam          :");
 
-        txtAlamat1.setBackground(new java.awt.Color(153, 153, 153));
-        txtAlamat1.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
-        txtAlamat1.setForeground(new java.awt.Color(255, 255, 255));
+        txtJam.setBackground(new java.awt.Color(153, 153, 153));
+        txtJam.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
+        txtJam.setForeground(new java.awt.Color(255, 255, 255));
 
         cbxIdPaket.setBackground(new java.awt.Color(153, 153, 153));
         cbxIdPaket.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
@@ -186,8 +358,8 @@ public class FormPenitipan extends javax.swing.JFrame {
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(cbxIdPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(cbxIdPaket, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtAlamat, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtAlamat1, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtJumlah, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtJam, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(datePenitipan, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 531, Short.MAX_VALUE))
@@ -226,10 +398,10 @@ public class FormPenitipan extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel5)
-                            .addComponent(txtAlamat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtJumlah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtAlamat1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtJam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel6))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -310,6 +482,31 @@ public class FormPenitipan extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
+       new FormMenu().setVisible(true);
+       dispose();
+    }//GEN-LAST:event_btnLogoutActionPerformed
+
+    private void btnInsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInsertActionPerformed
+        performSave();
+    }//GEN-LAST:event_btnInsertActionPerformed
+
+    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
+        performUpdate();
+    }//GEN-LAST:event_btnUpdateActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        performDelete();
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
+        empty();
+    }//GEN-LAST:event_btnClearActionPerformed
+
+    private void tabelPenitipanMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabelPenitipanMouseClicked
+        clickTable();
+    }//GEN-LAST:event_tabelPenitipanMouseClicked
+
     public static void main(String args[]) {
         
         try {
@@ -363,7 +560,7 @@ public class FormPenitipan extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tabelPenitipan;
-    private javax.swing.JTextField txtAlamat;
-    private javax.swing.JTextField txtAlamat1;
+    private javax.swing.JTextField txtJam;
+    private javax.swing.JTextField txtJumlah;
     // End of variables declaration//GEN-END:variables
 }

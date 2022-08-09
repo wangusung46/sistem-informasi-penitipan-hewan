@@ -1,9 +1,28 @@
 package penitipanhewan.view.menu;
 
+import javax.swing.JOptionPane;
+import penitipanhewan.model.admin.Admin;
+import penitipanhewan.model.admin.AdminJdbc;
+import penitipanhewan.model.admin.AdminJdbcImplement;
+
 public class FormLogin extends javax.swing.JFrame {
+    
+    private final AdminJdbc adminJdbc;
 
     public FormLogin() {
         initComponents();
+        adminJdbc = new AdminJdbcImplement();
+    }
+    
+    private void perMenu() {
+        this.setVisible(false);
+        FormMenu formMainMenu = new FormMenu();
+        formMainMenu.setVisible(true);
+    }
+
+    private void empty() {
+        txtUsername.setText("");
+        txtPassword.setText("");
     }
     
     @SuppressWarnings("unchecked")
@@ -53,6 +72,11 @@ public class FormLogin extends javax.swing.JFrame {
         btnSignin.setFont(new java.awt.Font("Arial", 0, 22)); // NOI18N
         btnSignin.setForeground(new java.awt.Color(255, 255, 255));
         btnSignin.setText("Signin");
+        btnSignin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSigninActionPerformed(evt);
+            }
+        });
 
         lblAccount.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         lblAccount.setForeground(new java.awt.Color(51, 102, 255));
@@ -141,6 +165,28 @@ public class FormLogin extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnSigninActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSigninActionPerformed
+        if (!txtUsername.getText().isEmpty()) {
+            if (!txtPassword.getText().isEmpty()) {
+                if(adminJdbc.login(txtUsername.getText(), txtPassword.getText())){
+                    String role = adminJdbc.selectRole(txtUsername.getText());
+                    Admin.userLogin = role;
+                    JOptionPane.showMessageDialog(null, "Berhasil Login", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    perMenu();
+                } else {
+                    empty();
+                    JOptionPane.showMessageDialog(null, "Gagal Login", "Success", JOptionPane.INFORMATION_MESSAGE);
+                }
+            } else {
+                empty();
+                JOptionPane.showMessageDialog(null, "Password tidak boleh kosong", "Warning", JOptionPane.WARNING_MESSAGE);
+            }
+        } else {
+            empty();
+            JOptionPane.showMessageDialog(null, "Username tidak boleh kosong", "Warning", JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_btnSigninActionPerformed
 
     public static void main(String args[]) {
        

@@ -1,9 +1,26 @@
 package penitipanhewan.view.menu;
 
+import javax.swing.JOptionPane;
+import penitipanhewan.model.admin.Admin;
+import penitipanhewan.model.admin.AdminJdbc;
+import penitipanhewan.model.admin.AdminJdbcImplement;
+
 public class FormRegister extends javax.swing.JFrame {
+    
+    private final AdminJdbc adminJdbc;
 
     public FormRegister() {
         initComponents();
+        adminJdbc = new AdminJdbcImplement();
+    }
+    
+    private void empty() {
+        txtPassword.setText("");
+    }
+
+    private void perLogin() {
+        new FormLogin().setVisible(true);
+        dispose();
     }
 
     @SuppressWarnings("unchecked")
@@ -17,7 +34,7 @@ public class FormRegister extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         txtNama = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        txtUserNama = new javax.swing.JTextField();
+        txtUserName = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         txtPassword = new javax.swing.JPasswordField();
         txtLogin = new javax.swing.JLabel();
@@ -73,9 +90,9 @@ public class FormRegister extends javax.swing.JFrame {
         jLabel5.setForeground(new java.awt.Color(0, 0, 0));
         jLabel5.setText("Nama         :");
 
-        txtUserNama.setBackground(new java.awt.Color(153, 153, 153));
-        txtUserNama.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
-        txtUserNama.setForeground(new java.awt.Color(255, 255, 255));
+        txtUserName.setBackground(new java.awt.Color(153, 153, 153));
+        txtUserName.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
+        txtUserName.setForeground(new java.awt.Color(255, 255, 255));
 
         jLabel6.setBackground(new java.awt.Color(0, 0, 0));
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -106,6 +123,11 @@ public class FormRegister extends javax.swing.JFrame {
         btnSignup.setFont(new java.awt.Font("Segoe UI", 1, 22)); // NOI18N
         btnSignup.setForeground(new java.awt.Color(255, 255, 255));
         btnSignup.setText("Signup");
+        btnSignup.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSignupActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -132,7 +154,7 @@ public class FormRegister extends javax.swing.JFrame {
                                     .addGroup(jPanel2Layout.createSequentialGroup()
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addComponent(txtUserNama)
+                                            .addComponent(txtUserName)
                                             .addComponent(txtPassword)
                                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                                                 .addComponent(txtNama, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -157,7 +179,7 @@ public class FormRegister extends javax.swing.JFrame {
                     .addComponent(jLabel5))
                 .addGap(12, 12, 12)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtUserNama, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtUserName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -208,6 +230,33 @@ public class FormRegister extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnSignupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSignupActionPerformed
+        if (!txtNama.getText().isEmpty()) {
+            if (!txtUserName.getText().isEmpty()) {
+                if (!txtPassword.getText().isEmpty()) {
+                    Admin admin = new Admin();
+                    admin.setId(0L);
+                    admin.setNama(txtNama.getText());
+                    admin.setPassword(txtPassword.getText());
+                    admin.setUserName(txtUserName.getText());
+                    admin.setRole(cbxRole.getSelectedItem().toString());                   
+                    adminJdbc.insert(admin);
+                    JOptionPane.showMessageDialog(null, "Success Register", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    perLogin();
+                } else {
+                    empty();
+                    JOptionPane.showMessageDialog(null, "Password tidak boleh kosong", "Warning", JOptionPane.WARNING_MESSAGE);
+                }
+            } else {
+                empty();
+                JOptionPane.showMessageDialog(null, "Nama tidak boleh kosong", "Warning", JOptionPane.WARNING_MESSAGE);
+            }
+        } else {
+            empty();
+            JOptionPane.showMessageDialog(null, "Admin name tidak boleh kosong", "Warning", JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_btnSignupActionPerformed
+
     public static void main(String args[]) {
         
         /* Create and display the form */
@@ -233,7 +282,7 @@ public class FormRegister extends javax.swing.JFrame {
     private javax.swing.JLabel txtLogin;
     private javax.swing.JTextField txtNama;
     private javax.swing.JPasswordField txtPassword;
-    private javax.swing.JTextField txtUserNama;
+    private javax.swing.JTextField txtUserName;
     // End of variables declaration//GEN-END:variables
 
 }
