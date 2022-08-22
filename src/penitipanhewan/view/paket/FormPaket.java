@@ -1,10 +1,134 @@
 package penitipanhewan.view.paket;
 
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import penitipanhewan.model.hewan.Hewan;
+import penitipanhewan.model.hewan.HewanJdbc;
+import penitipanhewan.model.hewan.HewanJdbcImplement;
+import penitipanhewan.model.makanan.Makanan;
+import penitipanhewan.model.makanan.MakananJdbc;
+import penitipanhewan.model.makanan.MakananJdbcImplement;
+import penitipanhewan.model.paket.Paket;
+import penitipanhewan.model.paket.PaketJdbc;
+import penitipanhewan.model.paket.PaketJdbcImplement;
+import penitipanhewan.view.menu.FormMenu;
+
 public class FormPaket extends javax.swing.JFrame {
+    
+    private final PaketJdbc paketJdbc;
+    private final HewanJdbc hewanJdbc;
+    private final MakananJdbc makananJdbc;
+    private Boolean clickTable;
+    private DefaultTableModel defaultTableModel;
 
     public FormPaket() {
         initComponents();
+        paketJdbc = new PaketJdbcImplement();
+        hewanJdbc = new HewanJdbcImplement();
+        makananJdbc = new MakananJdbcImplement();        
+        initTable();
+        loadTable();
+        loadComboBoxHewan();
+        loadComboBoxMakanan();           
     }
+    
+    private void initTable() {
+        defaultTableModel = new DefaultTableModel();
+        defaultTableModel.addColumn("No");
+        defaultTableModel.addColumn("ID Hewan");
+        defaultTableModel.addColumn("ID Makanan");       
+        tabelPaket.setModel(defaultTableModel);
+    }
+    
+    private void loadTable() {
+        defaultTableModel.getDataVector().removeAllElements();
+        defaultTableModel.fireTableDataChanged();
+        List<Paket> responses = paketJdbc.selectAll();
+        if (responses != null) {
+            Object[] objects = new Object[5];
+            for (Paket response : responses) {
+                objects[0] = response.getId();
+                objects[1] = response.getIdHewan();
+                objects[2] = response.getIdMakanan();                
+                defaultTableModel.addRow(objects);
+            }
+            clickTable = false;
+        }
+    }
+
+    private void loadComboBoxHewan() {
+        List<Hewan> responses = hewanJdbc.selectAll();
+        for (Hewan response : responses) {
+            cbxIdHewan.addItem(String.valueOf(response.getId()));
+        }
+    }
+
+    private void loadComboBoxMakanan() {
+        List<Makanan> responses = makananJdbc.selectAll();
+        for (Makanan response : responses) {
+            cbxIdMakanan.addItem(String.valueOf(response.getId()));
+        }
+    }
+
+    private void clickTable() {
+        cbxIdHewan.setSelectedItem(defaultTableModel.getValueAt(tabelPaket.getSelectedRow(), 1).toString());
+        cbxIdMakanan.setSelectedItem(defaultTableModel.getValueAt(tabelPaket.getSelectedRow(), 2).toString());        
+        clickTable = true;
+    }
+    
+    private void empty() {
+        cbxIdHewan.setSelectedIndex(0);  
+        cbxIdMakanan.setSelectedIndex(0);           
+    }
+    
+    private void performSave() {
+        if (cbxIdHewan.getSelectedItem()!= null) {
+            if (JOptionPane.showConfirmDialog(null, "Do you want to save new data ?", "Info", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
+                Paket request = new Paket();
+                request.setId(0L);
+                request.setIdHewan(Long.parseLong(cbxIdHewan.getSelectedItem().toString()));
+                request.setIdMakanan(Long.parseLong(cbxIdMakanan.getSelectedItem().toString()));                            
+                paketJdbc.insert(request);
+                loadTable();
+                empty();
+                JOptionPane.showMessageDialog(null, "Successfully save data", "Success", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Data not empty", "Warning", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    
+    private void performUpdate() {
+        if (cbxIdHewan.getSelectedItem()!= null) {
+            if (JOptionPane.showConfirmDialog(null, "Do you want to update new data ?", "Info", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
+                Paket request = new Paket();
+                request.setId(0L);
+                request.setIdHewan(Long.parseLong(cbxIdHewan.getSelectedItem().toString()));
+                request.setIdMakanan(Long.parseLong(cbxIdMakanan.getSelectedItem().toString()));                            
+                paketJdbc.insert(request);
+                loadTable();
+                empty();
+                JOptionPane.showMessageDialog(null, "Successfully update data", "Success", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Data not empty", "Warning", JOptionPane.WARNING_MESSAGE);
+        }
+    }   
+    
+    private void performDelete() {
+        if (clickTable) {
+            if (JOptionPane.showConfirmDialog(null, "Do you want to delete data by id " + defaultTableModel.getValueAt(tabelPaket.getSelectedRow(), 0).toString() + " ?", "Warning", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
+                paketJdbc.delete(Long.parseLong(defaultTableModel.getValueAt(tabelPaket.getSelectedRow(), 0).toString()));
+                loadTable();
+                empty();
+                JOptionPane.showMessageDialog(null, "Successfully delete data", "Success", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Delete or edit must click table", "Warning", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -35,22 +159,27 @@ public class FormPaket extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("FORM PAKET");
 
-        jPanel1.setBackground(new java.awt.Color(102, 255, 102));
+        jPanel1.setBackground(new java.awt.Color(0, 102, 102));
 
-        jPanel2.setBackground(new java.awt.Color(102, 255, 102));
+        jPanel2.setBackground(new java.awt.Color(0, 153, 153));
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jPanel3.setBackground(new java.awt.Color(102, 255, 255));
+        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
         jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jLabel1.setFont(new java.awt.Font("Arial", 0, 36)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Arial", 1, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(0, 0, 0));
         jLabel1.setText("Form Paket");
 
         btnLogout.setBackground(new java.awt.Color(255, 0, 51));
         btnLogout.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnLogout.setForeground(new java.awt.Color(255, 255, 255));
-        btnLogout.setText("Logout");
+        btnLogout.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penitipanhewan/image/logout.png"))); // NOI18N
+        btnLogout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLogoutActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -76,7 +205,7 @@ public class FormPaket extends javax.swing.JFrame {
 
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penitipanhewan/image/package.png"))); // NOI18N
 
-        jPanel4.setBackground(new java.awt.Color(153, 255, 255));
+        jPanel4.setBackground(new java.awt.Color(255, 255, 255));
         jPanel4.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         jLabel3.setBackground(new java.awt.Color(153, 153, 153));
@@ -97,24 +226,44 @@ public class FormPaket extends javax.swing.JFrame {
                 "Id", "Id Hewan", "Id Makanan"
             }
         ));
+        tabelPaket.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tabelPaketMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tabelPaket);
 
-        btnInsert.setBackground(new java.awt.Color(51, 255, 51));
+        btnInsert.setBackground(new java.awt.Color(51, 51, 255));
         btnInsert.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
         btnInsert.setForeground(new java.awt.Color(255, 255, 255));
         btnInsert.setText("Insert");
+        btnInsert.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnInsertActionPerformed(evt);
+            }
+        });
 
-        btnUpdate.setBackground(new java.awt.Color(51, 255, 51));
+        btnUpdate.setBackground(new java.awt.Color(51, 51, 255));
         btnUpdate.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
         btnUpdate.setForeground(new java.awt.Color(255, 255, 255));
         btnUpdate.setText("Update");
+        btnUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateActionPerformed(evt);
+            }
+        });
 
-        btnClear.setBackground(new java.awt.Color(51, 255, 51));
+        btnClear.setBackground(new java.awt.Color(51, 51, 255));
         btnClear.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
         btnClear.setForeground(new java.awt.Color(255, 255, 255));
         btnClear.setText("Clear");
+        btnClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearActionPerformed(evt);
+            }
+        });
 
-        btnDelete.setBackground(new java.awt.Color(51, 255, 51));
+        btnDelete.setBackground(new java.awt.Color(51, 51, 255));
         btnDelete.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
         btnDelete.setForeground(new java.awt.Color(255, 255, 255));
         btnDelete.setText("Delete");
@@ -204,7 +353,7 @@ public class FormPaket extends javax.swing.JFrame {
                             .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnClear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(36, Short.MAX_VALUE))
+                .addContainerGap(27, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -213,14 +362,13 @@ public class FormPaket extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(43, 43, 43)
-                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(327, 327, 327)
-                        .addComponent(jLabel2)))
-                .addContainerGap(40, Short.MAX_VALUE))
+                .addGap(327, 327, 327)
+                .addComponent(jLabel2)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(36, Short.MAX_VALUE)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(35, 35, 35))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -228,16 +376,19 @@ public class FormPaket extends javax.swing.JFrame {
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(30, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -257,9 +408,7 @@ public class FormPaket extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -267,8 +416,29 @@ public class FormPaket extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        // TODO add your handling code here:
+       performDelete();
     }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
+        new FormMenu().setVisible(true);
+        dispose();
+    }//GEN-LAST:event_btnLogoutActionPerformed
+
+    private void btnInsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInsertActionPerformed
+        performSave();
+    }//GEN-LAST:event_btnInsertActionPerformed
+
+    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
+        performUpdate();
+    }//GEN-LAST:event_btnUpdateActionPerformed
+
+    private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
+        empty();
+    }//GEN-LAST:event_btnClearActionPerformed
+
+    private void tabelPaketMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabelPaketMouseClicked
+        clickTable();
+    }//GEN-LAST:event_tabelPaketMouseClicked
 
     public static void main(String args[]) {
         
