@@ -34,11 +34,11 @@ public class FormMakanan extends javax.swing.JFrame {
         defaultTableModel.fireTableDataChanged();
         List<Makanan> responses = makananJdbc.selectAll();
         if (responses != null) {
-            Object[] objects = new Object[5];
+            Object[] objects = new Object[3];
             for (Makanan response : responses) {
                 objects[0] = response.getId();
-                objects[2] = response.getNama();                
-                objects[3] = response.getHarga();                        
+                objects[1] = response.getNama();                
+                objects[2] = response.getHarga();                        
                 defaultTableModel.addRow(objects);
             }
             clickTable = false;
@@ -77,10 +77,10 @@ public class FormMakanan extends javax.swing.JFrame {
         if (!txtNama.getText().isEmpty()) {
             if (JOptionPane.showConfirmDialog(null, "Do you want to update new data ?", "Info", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
                 Makanan request = new Makanan();
-                request.setId(0L);    
+                request.setId(Long.parseLong(defaultTableModel.getValueAt(tabelMakanan.getSelectedRow(), 0).toString()));    
                 request.setNama(txtNama.getText());       
                 request.setHarga(Long.parseLong(txtHarga.getText()));                   
-                makananJdbc.insert(request);
+                makananJdbc.update(request);
                 loadTable();
                 empty();
                 JOptionPane.showMessageDialog(null, "Successfully update data", "Success", JOptionPane.INFORMATION_MESSAGE);

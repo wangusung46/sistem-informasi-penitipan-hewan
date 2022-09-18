@@ -36,6 +36,7 @@ public class FormPaket extends javax.swing.JFrame {
     private void initTable() {
         defaultTableModel = new DefaultTableModel();
         defaultTableModel.addColumn("No");
+        defaultTableModel.addColumn("Nama");
         defaultTableModel.addColumn("ID Hewan");
         defaultTableModel.addColumn("ID Makanan");       
         tabelPaket.setModel(defaultTableModel);
@@ -46,11 +47,12 @@ public class FormPaket extends javax.swing.JFrame {
         defaultTableModel.fireTableDataChanged();
         List<Paket> responses = paketJdbc.selectAll();
         if (responses != null) {
-            Object[] objects = new Object[5];
+            Object[] objects = new Object[4];
             for (Paket response : responses) {
                 objects[0] = response.getId();
-                objects[1] = response.getIdHewan();
-                objects[2] = response.getIdMakanan();                
+                objects[1] = response.getNama();
+                objects[2] = response.getIdHewan();
+                objects[3] = response.getIdMakanan();                
                 defaultTableModel.addRow(objects);
             }
             clickTable = false;
@@ -71,13 +73,26 @@ public class FormPaket extends javax.swing.JFrame {
         }
     }
 
+    private void loadHewan() {
+        Hewan response = hewanJdbc.select(Long.parseLong(cbxIdHewan.getSelectedItem().toString()));
+        jTextFieldHewan.setText(response.getJenis());
+        jTextFieldUkuran.setText(response.getUkuran());
+    }
+
+    private void loadMakanan() {
+        Makanan response = makananJdbc.select(Long.parseLong(cbxIdMakanan.getSelectedItem().toString()));
+        jTextFieldMakanan.setText(response.getNama());
+    }
+
     private void clickTable() {
-        cbxIdHewan.setSelectedItem(defaultTableModel.getValueAt(tabelPaket.getSelectedRow(), 1).toString());
-        cbxIdMakanan.setSelectedItem(defaultTableModel.getValueAt(tabelPaket.getSelectedRow(), 2).toString());        
+        txtNama.setText(defaultTableModel.getValueAt(tabelPaket.getSelectedRow(), 1).toString());
+        cbxIdHewan.setSelectedItem(defaultTableModel.getValueAt(tabelPaket.getSelectedRow(), 2).toString());
+        cbxIdMakanan.setSelectedItem(defaultTableModel.getValueAt(tabelPaket.getSelectedRow(), 3).toString());        
         clickTable = true;
     }
     
     private void empty() {
+        txtNama.setText("");  
         cbxIdHewan.setSelectedIndex(0);  
         cbxIdMakanan.setSelectedIndex(0);           
     }
@@ -87,6 +102,7 @@ public class FormPaket extends javax.swing.JFrame {
             if (JOptionPane.showConfirmDialog(null, "Do you want to save new data ?", "Info", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
                 Paket request = new Paket();
                 request.setId(0L);
+                request.setNama(txtNama.getText());
                 request.setIdHewan(Long.parseLong(cbxIdHewan.getSelectedItem().toString()));
                 request.setIdMakanan(Long.parseLong(cbxIdMakanan.getSelectedItem().toString()));                            
                 paketJdbc.insert(request);
@@ -103,10 +119,11 @@ public class FormPaket extends javax.swing.JFrame {
         if (cbxIdHewan.getSelectedItem()!= null) {
             if (JOptionPane.showConfirmDialog(null, "Do you want to update new data ?", "Info", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
                 Paket request = new Paket();
-                request.setId(0L);
+                request.setId(Long.parseLong(defaultTableModel.getValueAt(tabelPaket.getSelectedRow(), 0).toString()));
+                request.setNama(txtNama.getText()); 
                 request.setIdHewan(Long.parseLong(cbxIdHewan.getSelectedItem().toString()));
                 request.setIdMakanan(Long.parseLong(cbxIdMakanan.getSelectedItem().toString()));                            
-                paketJdbc.insert(request);
+                paketJdbc.update(request);
                 loadTable();
                 empty();
                 JOptionPane.showMessageDialog(null, "Successfully update data", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -155,6 +172,11 @@ public class FormPaket extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
+        jTextFieldHewan = new javax.swing.JTextField();
+        jTextFieldMakanan = new javax.swing.JTextField();
+        jLabel9 = new javax.swing.JLabel();
+        txtNama = new javax.swing.JTextField();
+        jTextFieldUkuran = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("FORM PAKET");
@@ -276,12 +298,20 @@ public class FormPaket extends javax.swing.JFrame {
         cbxIdHewan.setBackground(new java.awt.Color(153, 153, 153));
         cbxIdHewan.setFont(new java.awt.Font("Arial", 0, 20)); // NOI18N
         cbxIdHewan.setForeground(new java.awt.Color(255, 255, 255));
-        cbxIdHewan.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", " ", " " }));
+        cbxIdHewan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbxIdHewanActionPerformed(evt);
+            }
+        });
 
         cbxIdMakanan.setBackground(new java.awt.Color(153, 153, 153));
         cbxIdMakanan.setFont(new java.awt.Font("Arial", 0, 20)); // NOI18N
         cbxIdMakanan.setForeground(new java.awt.Color(255, 255, 255));
-        cbxIdMakanan.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Makanan 1", "Makanan 2" }));
+        cbxIdMakanan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbxIdMakananActionPerformed(evt);
+            }
+        });
 
         jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penitipanhewan/image/insert.png"))); // NOI18N
 
@@ -291,22 +321,28 @@ public class FormPaket extends javax.swing.JFrame {
 
         jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penitipanhewan/image/clear.png"))); // NOI18N
 
+        jTextFieldHewan.setEditable(false);
+
+        jTextFieldMakanan.setEditable(false);
+
+        jLabel9.setBackground(new java.awt.Color(153, 153, 153));
+        jLabel9.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel9.setText("Id Hewan :");
+
+        txtNama.setBackground(new java.awt.Color(153, 153, 153));
+        txtNama.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
+        txtNama.setForeground(new java.awt.Color(255, 255, 255));
+
+        jTextFieldUkuran.setEditable(false);
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+            .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(cbxIdHewan, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cbxIdMakanan, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 445, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
@@ -320,21 +356,47 @@ public class FormPaket extends javax.swing.JFrame {
                             .addComponent(jLabel4)
                             .addComponent(jLabel6)
                             .addComponent(jLabel7)
-                            .addComponent(jLabel8))
-                        .addGap(19, 19, 19))))
+                            .addComponent(jLabel8)))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addComponent(cbxIdMakanan, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextFieldMakanan))
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(txtNama, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(cbxIdHewan, javax.swing.GroupLayout.Alignment.LEADING, 0, 262, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextFieldHewan, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextFieldUkuran)))))
+                .addGap(19, 19, 19))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(36, 36, 36)
+                .addGap(8, 8, 8)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel9)
+                    .addComponent(txtNama, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(cbxIdHewan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                    .addComponent(cbxIdHewan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextFieldHewan, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextFieldUkuran, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(cbxIdMakanan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(8, 8, 8)
+                    .addComponent(cbxIdMakanan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextFieldMakanan, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(6, 6, 6)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -440,6 +502,14 @@ public class FormPaket extends javax.swing.JFrame {
         clickTable();
     }//GEN-LAST:event_tabelPaketMouseClicked
 
+    private void cbxIdHewanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxIdHewanActionPerformed
+        loadHewan();
+    }//GEN-LAST:event_cbxIdHewanActionPerformed
+
+    private void cbxIdMakananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxIdMakananActionPerformed
+        loadMakanan();
+    }//GEN-LAST:event_cbxIdMakananActionPerformed
+
     public static void main(String args[]) {
         
         try {
@@ -483,11 +553,16 @@ public class FormPaket extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextField jTextFieldHewan;
+    private javax.swing.JTextField jTextFieldMakanan;
+    private javax.swing.JTextField jTextFieldUkuran;
     private javax.swing.JTable tabelPaket;
+    private javax.swing.JTextField txtNama;
     // End of variables declaration//GEN-END:variables
 }

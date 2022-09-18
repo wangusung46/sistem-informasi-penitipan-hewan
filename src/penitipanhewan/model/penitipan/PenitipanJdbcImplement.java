@@ -88,7 +88,7 @@ public class PenitipanJdbcImplement implements PenitipanJdbc {
             preparedStatement.setLong(2, request.getIdPelanggan());           
             preparedStatement.setLong(3, request.getJumlah());           
             preparedStatement.setLong(4, request.getJam());           
-            preparedStatement.setDate(5, (Date) request.getTanggal());           
+            preparedStatement.setDate(5, new java.sql.Date(request.getTanggal().getTime()));           
             logger.debug(preparedStatement.toString());
             preparedStatement.executeUpdate();
             preparedStatement.close();

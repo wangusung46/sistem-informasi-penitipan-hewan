@@ -35,12 +35,12 @@ public class FormPelanggan extends javax.swing.JFrame {
         defaultTableModel.fireTableDataChanged();
         List<Pelanggan> responses = pelangganJdbc.selectAll();
         if (responses != null) {
-            Object[] objects = new Object[5];
+            Object[] objects = new Object[4];
             for (Pelanggan response : responses) {
                 objects[0] = response.getId();
-                objects[2] = response.getNama();                
-                objects[3] = response.getNomorHp();                
-                objects[4] = response.getAlamat();                
+                objects[1] = response.getNama();                
+                objects[2] = response.getNomorHp();                
+                objects[3] = response.getAlamat();                
                 defaultTableModel.addRow(objects);
             }
             clickTable = false;
