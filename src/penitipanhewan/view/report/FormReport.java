@@ -1,9 +1,130 @@
 package penitipanhewan.view.report;
 
+import java.io.InputStream;
+import java.sql.Connection;
+import java.util.HashMap;
+import koneksi.Conn;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
+import net.sf.jasperreports.view.JasperViewer;
+import penitipanhewan.model.admin.Admin;
+
 public class FormReport extends javax.swing.JFrame {
+    
+    private static Connection connection;
+    private static final String logo = "src\\penitipanhewan\\view\\report\\logo.jpeg";
+    private static final String judul = "Penitipan Hewan";
+    private static final String alamat = "Jl. Harsono RM No.1, Ragunan, Kec. Ps. Minggu, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta";
+    private static final String jabatan = "Admin";
+    private static final String nama = "Andre Ricky";
+    private static final String path = "/penitipanhewan/view/report/";
 
     public FormReport() {
         initComponents();
+        connection = Conn.getConnection();
+        if (Admin.userLogin.equals("Pemilik")) {
+            btnReportHewan.setEnabled(false);
+            btnReportPaket.setEnabled(false);
+            btnReportPelanggan.setEnabled(false);
+            btnReportMakanan.setEnabled(false);
+        }
+    }
+    
+    private void printHewan() {
+        try {
+            HashMap parameter = new HashMap();
+            parameter.put("logo", logo);
+            parameter.put("judul", judul);
+            parameter.put("alamat", alamat);
+            parameter.put("jabatan", jabatan);
+            parameter.put("nama", nama);
+            InputStream file = getClass().getResourceAsStream(path + "Hewan.jrxml");
+            JasperDesign JasperDesign = JRXmlLoader.load(file);
+            JasperReport JasperReport = JasperCompileManager.compileReport(JasperDesign);
+            JasperPrint JasperPrint = JasperFillManager.fillReport(JasperReport, parameter, connection);
+            JasperViewer.viewReport(JasperPrint, false);
+        } catch (JRException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    private void printMakanan() {
+        try {
+            HashMap parameter = new HashMap();
+            parameter.put("logo", logo);
+            parameter.put("judul", judul);
+            parameter.put("alamat", alamat);
+            parameter.put("jabatan", jabatan);
+            parameter.put("nama", nama);
+            InputStream file = getClass().getResourceAsStream(path + "Makanan.jrxml");
+            JasperDesign JasperDesign = JRXmlLoader.load(file);
+            JasperReport JasperReport = JasperCompileManager.compileReport(JasperDesign);
+            JasperPrint JasperPrint = JasperFillManager.fillReport(JasperReport, parameter, connection);
+            JasperViewer.viewReport(JasperPrint, false);
+        } catch (JRException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    private void printPaket() {
+        try {
+            HashMap parameter = new HashMap();
+            parameter.put("logo", logo);
+            parameter.put("judul", judul);
+            parameter.put("alamat", alamat);
+            parameter.put("jabatan", jabatan);
+            parameter.put("nama", nama);
+            InputStream file = getClass().getResourceAsStream(path + "Paket.jrxml");
+            JasperDesign JasperDesign = JRXmlLoader.load(file);
+            JasperReport JasperReport = JasperCompileManager.compileReport(JasperDesign);
+            JasperPrint JasperPrint = JasperFillManager.fillReport(JasperReport, parameter, connection);
+            JasperViewer.viewReport(JasperPrint, false);
+        } catch (JRException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    private void printPelanggan() {
+        try {
+            HashMap parameter = new HashMap();
+            parameter.put("logo", logo);
+            parameter.put("judul", judul);
+            parameter.put("alamat", alamat);
+            parameter.put("jabatan", jabatan);
+            parameter.put("nama", nama);
+            InputStream file = getClass().getResourceAsStream(path + "Pelanggan.jrxml");
+            JasperDesign JasperDesign = JRXmlLoader.load(file);
+            JasperReport JasperReport = JasperCompileManager.compileReport(JasperDesign);
+            JasperPrint JasperPrint = JasperFillManager.fillReport(JasperReport, parameter, connection);
+            JasperViewer.viewReport(JasperPrint, false);
+        } catch (JRException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    private void printPenitipan() {
+        try {
+            HashMap parameter = new HashMap();
+            parameter.put("dari", dateDari.getDate());
+            parameter.put("sampai", dateSampai.getDate());
+            parameter.put("logo", logo);
+            parameter.put("judul", judul);
+            parameter.put("alamat", alamat);
+            parameter.put("jabatan", jabatan);
+            parameter.put("nama", nama);
+            InputStream file = getClass().getResourceAsStream(path + "Penitipan.jrxml");
+            JasperDesign JasperDesign = JRXmlLoader.load(file);
+            JasperReport JasperReport = JasperCompileManager.compileReport(JasperDesign);
+            JasperPrint JasperPrint = JasperFillManager.fillReport(JasperReport, parameter, connection);
+            JasperViewer.viewReport(JasperPrint, false);
+        } catch (JRException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -77,26 +198,51 @@ public class FormReport extends javax.swing.JFrame {
         btnReportHewan.setFont(new java.awt.Font("Arial", 1, 24)); // NOI18N
         btnReportHewan.setForeground(new java.awt.Color(255, 255, 255));
         btnReportHewan.setText("Report Hewan");
+        btnReportHewan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReportHewanActionPerformed(evt);
+            }
+        });
 
         btnReportMakanan.setBackground(new java.awt.Color(51, 51, 255));
         btnReportMakanan.setFont(new java.awt.Font("Arial", 1, 24)); // NOI18N
         btnReportMakanan.setForeground(new java.awt.Color(255, 255, 255));
         btnReportMakanan.setText("Report Makanan");
+        btnReportMakanan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReportMakananActionPerformed(evt);
+            }
+        });
 
         btnReportPenitipan.setBackground(new java.awt.Color(51, 51, 255));
         btnReportPenitipan.setFont(new java.awt.Font("Arial", 1, 24)); // NOI18N
         btnReportPenitipan.setForeground(new java.awt.Color(255, 255, 255));
         btnReportPenitipan.setText("Report Penitipan");
+        btnReportPenitipan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReportPenitipanActionPerformed(evt);
+            }
+        });
 
         btnReportPaket.setBackground(new java.awt.Color(51, 51, 255));
         btnReportPaket.setFont(new java.awt.Font("Arial", 1, 24)); // NOI18N
         btnReportPaket.setForeground(new java.awt.Color(255, 255, 255));
         btnReportPaket.setText("Report Paket");
+        btnReportPaket.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReportPaketActionPerformed(evt);
+            }
+        });
 
         btnReportPelanggan.setBackground(new java.awt.Color(51, 51, 255));
         btnReportPelanggan.setFont(new java.awt.Font("Arial", 1, 24)); // NOI18N
         btnReportPelanggan.setForeground(new java.awt.Color(255, 255, 255));
         btnReportPelanggan.setText("Report Pelanggan");
+        btnReportPelanggan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReportPelangganActionPerformed(evt);
+            }
+        });
 
         dateDari.setBackground(new java.awt.Color(153, 153, 153));
         dateDari.setForeground(new java.awt.Color(255, 255, 255));
@@ -117,24 +263,20 @@ public class FormReport extends javax.swing.JFrame {
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(61, 61, 61)
+                .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(dateDari, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnReportHewan, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnReportPenitipan, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(dateSampai, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 130, Short.MAX_VALUE)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(btnReportPelanggan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnReportMakanan, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnReportPaket, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(62, 62, 62))))
+                    .addComponent(dateSampai, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnReportPenitipan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(dateDari, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 139, Short.MAX_VALUE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(btnReportPelanggan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnReportMakanan, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnReportPaket, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnReportHewan, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(62, 62, 62))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -142,23 +284,25 @@ public class FormReport extends javax.swing.JFrame {
                 .addGap(25, 25, 25)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(dateDari, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(dateDari, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(dateSampai, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(btnReportPaket, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnReportPenitipan, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnReportPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnReportMakanan, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnReportHewan, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(17, 17, 17))
+                        .addComponent(dateSampai, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnReportPenitipan, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(btnReportHewan, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnReportPaket, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnReportPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnReportMakanan, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -218,6 +362,26 @@ public class FormReport extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnReportHewanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportHewanActionPerformed
+        printHewan();
+    }//GEN-LAST:event_btnReportHewanActionPerformed
+
+    private void btnReportPenitipanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportPenitipanActionPerformed
+        printPenitipan();
+    }//GEN-LAST:event_btnReportPenitipanActionPerformed
+
+    private void btnReportPaketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportPaketActionPerformed
+        printPaket();
+    }//GEN-LAST:event_btnReportPaketActionPerformed
+
+    private void btnReportPelangganActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportPelangganActionPerformed
+        printPelanggan();
+    }//GEN-LAST:event_btnReportPelangganActionPerformed
+
+    private void btnReportMakananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportMakananActionPerformed
+        printMakanan();
+    }//GEN-LAST:event_btnReportMakananActionPerformed
+
     public static void main(String args[]) {
         
         try {
@@ -227,15 +391,12 @@ public class FormReport extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FormReport.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FormReport.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FormReport.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(FormReport.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        
         //</editor-fold>
         //</editor-fold>
 

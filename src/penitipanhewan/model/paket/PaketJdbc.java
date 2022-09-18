@@ -14,4 +14,6 @@ public interface PaketJdbc {
     
     public void delete(Long request);
 
+    public Long selectHarga(Long parseLong);
+
 }

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.19.1.final using JasperReports Library version 6.19.1-867c00bf88cd4d784d404379d6c05e1b419e8a4c  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Hewan" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="50328c8e-3630-42bd-ab70-bbadfdffa14e">
+	<property name="ireport.zoom" value="0.7513148009015781"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Hewan"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.report.description" value=""/>
+	<parameter name="logo" class="java.lang.String"/>
+	<parameter name="judul" class="java.lang.String"/>
+	<parameter name="alamat" class="java.lang.String"/>
+	<parameter name="jabatan" class="java.lang.String"/>
+	<parameter name="nama" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[select * from hewan;]]>
+	</queryString>
+	<field name="id" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="id"/>
+		<property name="com.jaspersoft.studio.field.label" value="id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="hewan"/>
+	</field>
+	<field name="jenis" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="jenis"/>
+		<property name="com.jaspersoft.studio.field.label" value="jenis"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="hewan"/>
+	</field>
+	<field name="ukuran" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ukuran"/>
+		<property name="com.jaspersoft.studio.field.label" value="ukuran"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="hewan"/>
+	</field>
+	<field name="harga" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="harga"/>
+		<property name="com.jaspersoft.studio.field.label" value="harga"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="hewan"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="87" splitType="Stretch">
+			<image>
+				<reportElement x="0" y="0" width="106" height="78" uuid="741b4252-fcf2-4820-a589-16229bbca694"/>
+				<imageExpression><![CDATA[$P{logo}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="106" y="0" width="590" height="30" uuid="644b9826-e9db-403c-9846-2f9c611f64a2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="18" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{judul}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="106" y="30" width="590" height="48" uuid="f2e326a8-831a-4681-bb7f-d1e3df2bbf03"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{alamat}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="78" width="802" height="1" uuid="4f56374e-13a7-4650-8f46-bcc45c5cdfdc">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+			</line>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="30" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="802" height="30" uuid="5df533fb-dc7d-46aa-a960-4c1ecf562e4d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Laporan Hewan]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="21" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="202" height="21" uuid="0b51192c-ef25-4a8a-bc29-101bdc7217c6">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="588d88d6-e5b7-42bc-867a-2b616a31a888"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[ID]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="202" y="0" width="200" height="21" uuid="3fc3cef3-b090-4922-a479-e04398185b50">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="2ecb813a-cc16-4e69-b802-5bc6eebd09c7"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Jenis]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="402" y="0" width="200" height="21" uuid="6c848658-62bd-4888-a9fe-8372a71a49da">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4571875d-ce96-43dc-8e22-416892f177e4"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Ukuran]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="602" y="0" width="200" height="21" uuid="2293f08d-e2cd-4089-a796-45a90a94029d">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="fe65a7d0-dbb1-4bc2-918a-abb3906dd7ca"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Harga]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="30" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="202" height="30" uuid="1d6da272-1e8c-4c3d-b7e4-9e173c1d1eac">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="588d88d6-e5b7-42bc-867a-2b616a31a888"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="202" y="0" width="200" height="30" uuid="aba3a057-4385-41d9-9ce9-8cc56c58e9f1">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="2ecb813a-cc16-4e69-b802-5bc6eebd09c7"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{jenis}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="402" y="0" width="200" height="30" uuid="1b42d370-4f7c-4b18-b816-07ad79a30959">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4571875d-ce96-43dc-8e22-416892f177e4"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ukuran}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="602" y="0" width="200" height="30" uuid="10328e67-6c2e-4cc5-83de-a6459f0c1af2">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="fe65a7d0-dbb1-4bc2-918a-abb3906dd7ca"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{harga}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="120" splitType="Stretch">
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="602" y="39" width="200" height="20" uuid="6cf53299-eda0-45c7-8b7b-d27e8dbf38a0"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA["Jakarta, " + new SimpleDateFormat("EEEE dd MMMM yyyy", new java.util.Locale("id")).format(new Date())]]></textFieldExpression>
+			</textField>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="602" y="59" width="200" height="20" uuid="3f9de9d1-075f-4b4e-924b-eb82af581974"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{jabatan}]]></textFieldExpression>
+			</textField>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="602" y="100" width="200" height="20" uuid="343815d8-308d-43ff-ae57-4c88a1940826"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{nama}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

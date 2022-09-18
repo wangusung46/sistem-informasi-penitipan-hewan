@@ -33,6 +33,7 @@ public class PaketJdbcImplement implements PaketJdbc {
             while (resultSet.next()) {
                 Paket paket = new Paket();
                 paket.setId(resultSet.getLong("id"));             
+                paket.setNama(resultSet.getString("nama"));               
                 paket.setIdHewan(resultSet.getLong("id_hewan"));               
                 paket.setIdMakanan(resultSet.getLong("id_makanan"));                
                 response.add(paket);
@@ -59,9 +60,10 @@ public class PaketJdbcImplement implements PaketJdbc {
             logger.debug(preparedStatement.toString());
             resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                response.setId(resultSet.getLong("id"));               
-                response.setIdHewan(resultSet.getLong("id_hewan"));         
-                response.setIdMakanan(resultSet.getLong("id_makanan"));
+                response.setId(resultSet.getLong("id"));             
+                response.setNama(resultSet.getString("nama"));               
+                response.setIdHewan(resultSet.getLong("id_hewan"));               
+                response.setIdMakanan(resultSet.getLong("id_makanan"));         
             }
             logger.debug(response.toString());
         } catch (SQLException e) {
@@ -75,10 +77,11 @@ public class PaketJdbcImplement implements PaketJdbc {
     public void insert(Paket request) {
         logger.debug(request.toString());
         try {
-            sql = "INSERT INTO paket (id_hewan, id_makanan) VALUES(?, ?);";
+            sql = "INSERT INTO paket (nama, id_hewan, id_makanan) VALUES(?, ?, ?);";
             preparedStatement = connection.prepareStatement(sql);          
-            preparedStatement.setLong(1, request.getIdHewan());
-            preparedStatement.setLong(2, request.getIdMakanan());           
+            preparedStatement.setString(1, request.getNama());
+            preparedStatement.setLong(2, request.getIdHewan());
+            preparedStatement.setLong(3, request.getIdMakanan());           
             logger.debug(preparedStatement.toString());
             preparedStatement.executeUpdate();
             preparedStatement.close();
@@ -91,11 +94,12 @@ public class PaketJdbcImplement implements PaketJdbc {
     public void update(Paket request) {
         logger.debug(request.toString());
         try {
-            sql = "UPDATE paket SET id_hewan=?, id_makanan=? WHERE id=?;";
+            sql = "UPDATE paket SET nama=?, id_hewan=?, id_makanan=? WHERE id=?;";
             preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setLong(1, request.getIdHewan());                       
-            preparedStatement.setLong(2, request.getIdMakanan());
-            preparedStatement.setLong(3, request.getId());
+            preparedStatement.setString(1, request.getNama());
+            preparedStatement.setLong(2, request.getIdHewan());                       
+            preparedStatement.setLong(3, request.getIdMakanan());
+            preparedStatement.setLong(4, request.getId());
             logger.debug(preparedStatement.toString());
             preparedStatement.executeUpdate();
             preparedStatement.close();
@@ -118,6 +122,25 @@ public class PaketJdbcImplement implements PaketJdbc {
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    @Override
+    public Long selectHarga(Long parseLong) {
+        try {
+            sql = "select b.harga + c.harga harga from paket a left join hewan b on a.id_hewan = b.id left join makanan c on a.id_makanan = c.id where a.id = ?;";
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setLong(1, parseLong);
+            logger.debug(preparedStatement.toString());
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getLong("harga");                 
+            }
+            return 0L;
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
+            logger.error(e.getMessage());
+        }
+        return null;
     }
 
 }

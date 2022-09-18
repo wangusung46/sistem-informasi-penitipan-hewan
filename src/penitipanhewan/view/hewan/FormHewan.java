@@ -9,6 +9,8 @@ import penitipanhewan.model.hewan.HewanJdbcImplement;
 import penitipanhewan.view.menu.FormMenu;
 
 public class FormHewan extends javax.swing.JFrame {
+
+    private static final long serialVersionUID = 1L;
     
     private final HewanJdbc hewanJdbc;
     private Boolean clickTable;
@@ -35,12 +37,12 @@ public class FormHewan extends javax.swing.JFrame {
         defaultTableModel.fireTableDataChanged();
         List<Hewan> responses = hewanJdbc.selectAll();
         if (responses != null) {
-            Object[] objects = new Object[5];
+            Object[] objects = new Object[4];
             for (Hewan response : responses) {
                 objects[0] = response.getId();
-                objects[2] = response.getJenis();                
-                objects[3] = response.getUkuran();                
-                objects[4] = response.getHarga();                        
+                objects[1] = response.getJenis();                
+                objects[2] = response.getUkuran();                
+                objects[3] = response.getHarga();                        
                 defaultTableModel.addRow(objects);
             }
             clickTable = false;
@@ -82,11 +84,11 @@ public class FormHewan extends javax.swing.JFrame {
         if (cbxUkuran.getSelectedItem()!= null) {
             if (JOptionPane.showConfirmDialog(null, "Do you want to update new data ?", "Info", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
                 Hewan request = new Hewan();
-                request.setId(0L);
+                request.setId(Long.parseLong(defaultTableModel.getValueAt(tabelHewan.getSelectedRow(), 0).toString()));
                 request.setJenis(txtJenis.getText()); 
                 request.setUkuran(cbxUkuran.getSelectedItem().toString()); 
                 request.setHarga(Long.parseLong(txtHarga.getText()));                              
-                hewanJdbc.insert(request);
+                hewanJdbc.update(request);
                 loadTable();
                 empty();
                 JOptionPane.showMessageDialog(null, "Successfully update data", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -441,21 +443,13 @@ public class FormHewan extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FormHewan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FormHewan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FormHewan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(FormHewan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FormHewan().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new FormHewan().setVisible(true);
         });
     }
 
