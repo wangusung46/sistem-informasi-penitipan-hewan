@@ -48,7 +48,7 @@ public class AdminJdbcImplement implements AdminJdbc {
     public void insert(Admin request) {
         logger.debug(request.toString());
         try {
-            sql = "INSERT INTO admin (nama, username, `admin`, password, `role`) VALUES(?, ?, ?, ?);";
+            sql = "INSERT INTO admin (nama, username, password, `role`) VALUES(?, ?, ?, ?);";
             preparedStatement = connection.prepareStatement(sql);            
             preparedStatement.setString(1, request.getNama());  
             preparedStatement.setString(2, request.getUserName());
