@@ -15,10 +15,11 @@ import penitipanhewan.model.paket.PaketJdbcImplement;
 import penitipanhewan.view.menu.FormMenu;
 
 public class FormPaket extends javax.swing.JFrame {
-    
-    private final PaketJdbc paketJdbc;
-    private final HewanJdbc hewanJdbc;
-    private final MakananJdbc makananJdbc;
+
+    private static PaketJdbc paketJdbc;
+    private static HewanJdbc hewanJdbc;
+    private static MakananJdbc makananJdbc;
+    private static final long serialVersionUID = 1L;
     private Boolean clickTable;
     private DefaultTableModel defaultTableModel;
 
@@ -26,22 +27,22 @@ public class FormPaket extends javax.swing.JFrame {
         initComponents();
         paketJdbc = new PaketJdbcImplement();
         hewanJdbc = new HewanJdbcImplement();
-        makananJdbc = new MakananJdbcImplement();        
+        makananJdbc = new MakananJdbcImplement();
         initTable();
         loadTable();
         loadComboBoxHewan();
-        loadComboBoxMakanan();           
+        loadComboBoxMakanan();
     }
-    
+
     private void initTable() {
         defaultTableModel = new DefaultTableModel();
-        defaultTableModel.addColumn("No");
+        defaultTableModel.addColumn("ID");
         defaultTableModel.addColumn("Nama");
-        defaultTableModel.addColumn("ID Hewan");
-        defaultTableModel.addColumn("ID Makanan");       
+        defaultTableModel.addColumn("Nama Hewan");
+        defaultTableModel.addColumn("Nama Makanan");
         tabelPaket.setModel(defaultTableModel);
     }
-    
+
     private void loadTable() {
         defaultTableModel.getDataVector().removeAllElements();
         defaultTableModel.fireTableDataChanged();
@@ -51,8 +52,8 @@ public class FormPaket extends javax.swing.JFrame {
             for (Paket response : responses) {
                 objects[0] = response.getId();
                 objects[1] = response.getNama();
-                objects[2] = response.getIdHewan();
-                objects[3] = response.getIdMakanan();                
+                objects[2] = hewanJdbc.select(response.getIdHewan().toString()).getJenis();
+                objects[3] = makananJdbc.select(response.getIdMakanan().toString()).getNama();
                 defaultTableModel.addRow(objects);
             }
             clickTable = false;
@@ -74,37 +75,36 @@ public class FormPaket extends javax.swing.JFrame {
     }
 
     private void loadHewan() {
-        Hewan response = hewanJdbc.select(Long.parseLong(cbxIdHewan.getSelectedItem().toString()));
+        Hewan response = hewanJdbc.select(cbxIdHewan.getSelectedItem().toString().substring(1));
         jTextFieldHewan.setText(response.getJenis());
         jTextFieldUkuran.setText(response.getUkuran());
     }
 
     private void loadMakanan() {
-        Makanan response = makananJdbc.select(Long.parseLong(cbxIdMakanan.getSelectedItem().toString()));
+        Makanan response = makananJdbc.select(cbxIdMakanan.getSelectedItem().toString().substring(1));
         jTextFieldMakanan.setText(response.getNama());
     }
 
     private void clickTable() {
         txtNama.setText(defaultTableModel.getValueAt(tabelPaket.getSelectedRow(), 1).toString());
-        cbxIdHewan.setSelectedItem(defaultTableModel.getValueAt(tabelPaket.getSelectedRow(), 2).toString());
-        cbxIdMakanan.setSelectedItem(defaultTableModel.getValueAt(tabelPaket.getSelectedRow(), 3).toString());        
+        cbxIdHewan.setSelectedItem(hewanJdbc.select(paketJdbc.select(defaultTableModel.getValueAt(tabelPaket.getSelectedRow(), 0).toString()).getIdHewan().toString()).getId());
+        cbxIdMakanan.setSelectedItem(makananJdbc.select(paketJdbc.select(defaultTableModel.getValueAt(tabelPaket.getSelectedRow(), 0).toString()).getIdMakanan().toString()).getId());
         clickTable = true;
     }
-    
+
     private void empty() {
-        txtNama.setText("");  
-        cbxIdHewan.setSelectedIndex(0);  
-        cbxIdMakanan.setSelectedIndex(0);           
+        txtNama.setText("");
+        cbxIdHewan.setSelectedIndex(0);
+        cbxIdMakanan.setSelectedIndex(0);
     }
-    
+
     private void performSave() {
-        if (cbxIdHewan.getSelectedItem()!= null) {
+        if (cbxIdHewan.getSelectedItem() != null) {
             if (JOptionPane.showConfirmDialog(null, "Do you want to save new data ?", "Info", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
                 Paket request = new Paket();
-                request.setId(0L);
                 request.setNama(txtNama.getText());
-                request.setIdHewan(Long.parseLong(cbxIdHewan.getSelectedItem().toString()));
-                request.setIdMakanan(Long.parseLong(cbxIdMakanan.getSelectedItem().toString()));                            
+                request.setIdHewan(Long.valueOf(cbxIdHewan.getSelectedItem().toString().substring(1)));
+                request.setIdMakanan(Long.valueOf(cbxIdMakanan.getSelectedItem().toString().substring(1)));
                 paketJdbc.insert(request);
                 loadTable();
                 empty();
@@ -114,15 +114,15 @@ public class FormPaket extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Data not empty", "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
-    
+
     private void performUpdate() {
-        if (cbxIdHewan.getSelectedItem()!= null) {
+        if (cbxIdHewan.getSelectedItem() != null) {
             if (JOptionPane.showConfirmDialog(null, "Do you want to update new data ?", "Info", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
                 Paket request = new Paket();
-                request.setId(Long.parseLong(defaultTableModel.getValueAt(tabelPaket.getSelectedRow(), 0).toString()));
-                request.setNama(txtNama.getText()); 
-                request.setIdHewan(Long.parseLong(cbxIdHewan.getSelectedItem().toString()));
-                request.setIdMakanan(Long.parseLong(cbxIdMakanan.getSelectedItem().toString()));                            
+                request.setId(defaultTableModel.getValueAt(tabelPaket.getSelectedRow(), 0).toString());
+                request.setNama(txtNama.getText());
+                request.setIdHewan(Long.valueOf(cbxIdHewan.getSelectedItem().toString().substring(1)));
+                request.setIdMakanan(Long.valueOf(cbxIdMakanan.getSelectedItem().toString().substring(1)));
                 paketJdbc.update(request);
                 loadTable();
                 empty();
@@ -131,12 +131,12 @@ public class FormPaket extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(null, "Data not empty", "Warning", JOptionPane.WARNING_MESSAGE);
         }
-    }   
-    
+    }
+
     private void performDelete() {
         if (clickTable) {
             if (JOptionPane.showConfirmDialog(null, "Do you want to delete data by id " + defaultTableModel.getValueAt(tabelPaket.getSelectedRow(), 0).toString() + " ?", "Warning", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
-                paketJdbc.delete(Long.parseLong(defaultTableModel.getValueAt(tabelPaket.getSelectedRow(), 0).toString()));
+                paketJdbc.delete(defaultTableModel.getValueAt(tabelPaket.getSelectedRow(), 0).toString());
                 loadTable();
                 empty();
                 JOptionPane.showMessageDialog(null, "Successfully delete data", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -145,7 +145,6 @@ public class FormPaket extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Delete or edit must click table", "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
-
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -328,7 +327,7 @@ public class FormPaket extends javax.swing.JFrame {
         jLabel9.setBackground(new java.awt.Color(153, 153, 153));
         jLabel9.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel9.setText("Id Hewan :");
+        jLabel9.setText("Nama Paket :");
 
         txtNama.setBackground(new java.awt.Color(153, 153, 153));
         txtNama.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
@@ -358,10 +357,10 @@ public class FormPaket extends javax.swing.JFrame {
                             .addComponent(jLabel7)
                             .addComponent(jLabel8)))
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
                             .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel4Layout.createSequentialGroup()
@@ -369,14 +368,13 @@ public class FormPaket extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jTextFieldMakanan))
                             .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(txtNama, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(cbxIdHewan, javax.swing.GroupLayout.Alignment.LEADING, 0, 262, Short.MAX_VALUE))
+                                .addComponent(cbxIdHewan, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jTextFieldHewan, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextFieldUkuran)))))
-                .addGap(19, 19, 19))
+                                .addComponent(jTextFieldUkuran))
+                            .addComponent(txtNama))))
+                .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -466,7 +464,7 @@ public class FormPaket extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 13, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -478,7 +476,7 @@ public class FormPaket extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-       performDelete();
+        performDelete();
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
@@ -511,7 +509,7 @@ public class FormPaket extends javax.swing.JFrame {
     }//GEN-LAST:event_cbxIdMakananActionPerformed
 
     public static void main(String args[]) {
-        
+
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -519,21 +517,13 @@ public class FormPaket extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FormPaket.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FormPaket.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FormPaket.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(FormPaket.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FormPaket().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new FormPaket().setVisible(true);
         });
     }
 

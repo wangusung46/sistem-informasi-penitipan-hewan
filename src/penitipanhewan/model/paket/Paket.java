@@ -2,16 +2,16 @@ package penitipanhewan.model.paket;
 
 public class Paket {
 
-    private Long id;
+    private String id;
     private Long idHewan;
     private Long idMakanan;
     private String nama;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

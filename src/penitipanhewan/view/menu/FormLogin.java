@@ -19,6 +19,12 @@ public class FormLogin extends javax.swing.JFrame {
         FormMenu formMainMenu = new FormMenu();
         formMainMenu.setVisible(true);
     }
+    
+    private void signUp() {
+        this.setVisible(false);
+        FormRegister formRegister = new FormRegister();
+        formRegister.setVisible(true);
+    }
 
     private void empty() {
         txtUsername.setText("");
@@ -81,6 +87,11 @@ public class FormLogin extends javax.swing.JFrame {
         lblAccount.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         lblAccount.setForeground(new java.awt.Color(51, 102, 255));
         lblAccount.setText("Create new account ?");
+        lblAccount.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lblAccountMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -187,6 +198,10 @@ public class FormLogin extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Username tidak boleh kosong", "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }//GEN-LAST:event_btnSigninActionPerformed
+
+    private void lblAccountMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblAccountMouseClicked
+        signUp();
+    }//GEN-LAST:event_lblAccountMouseClicked
 
     public static void main(String args[]) {
        

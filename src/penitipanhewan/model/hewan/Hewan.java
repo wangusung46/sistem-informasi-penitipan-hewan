@@ -2,16 +2,16 @@ package penitipanhewan.model.hewan;
 
 public class Hewan {
     
-    private Long id;
+    private String id;
     private String jenis;
     private String ukuran;
     private Long harga;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

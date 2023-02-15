@@ -9,8 +9,9 @@ import penitipanhewan.model.pelanggan.PelangganJdbcImplement;
 import penitipanhewan.view.menu.FormMenu;
 
 public class FormPelanggan extends javax.swing.JFrame {
-    
-    private final PelangganJdbc pelangganJdbc;
+
+    private static PelangganJdbc pelangganJdbc;
+    private static final long serialVersionUID = 1L;
     private Boolean clickTable;
     private DefaultTableModel defaultTableModel;
 
@@ -20,16 +21,16 @@ public class FormPelanggan extends javax.swing.JFrame {
         initTable();
         loadTable();
     }
-    
+
     private void initTable() {
         defaultTableModel = new DefaultTableModel();
-        defaultTableModel.addColumn("No");
-        defaultTableModel.addColumn("Nama");        
-        defaultTableModel.addColumn("Nomor Hp");        
-        defaultTableModel.addColumn("Alamat");        
+        defaultTableModel.addColumn("ID");
+        defaultTableModel.addColumn("Nama");
+        defaultTableModel.addColumn("Nomor Hp");
+        defaultTableModel.addColumn("Alamat");
         tabelPelanggan.setModel(defaultTableModel);
     }
-    
+
     private void loadTable() {
         defaultTableModel.getDataVector().removeAllElements();
         defaultTableModel.fireTableDataChanged();
@@ -38,33 +39,32 @@ public class FormPelanggan extends javax.swing.JFrame {
             Object[] objects = new Object[4];
             for (Pelanggan response : responses) {
                 objects[0] = response.getId();
-                objects[1] = response.getNama();                
-                objects[2] = response.getNomorHp();                
-                objects[3] = response.getAlamat();                
+                objects[1] = response.getNama();
+                objects[2] = response.getNomorHp();
+                objects[3] = response.getAlamat();
                 defaultTableModel.addRow(objects);
             }
             clickTable = false;
         }
     }
-    
+
     private void clickTable() {
         txtNama.setText(defaultTableModel.getValueAt(tabelPelanggan.getSelectedRow(), 1).toString());
         txtNomorHp.setText(defaultTableModel.getValueAt(tabelPelanggan.getSelectedRow(), 2).toString());
         txtAlamat.setText(defaultTableModel.getValueAt(tabelPelanggan.getSelectedRow(), 3).toString());
         clickTable = true;
     }
-    
+
     private void empty() {
-        txtNama.setText("");        
-        txtNomorHp.setText("");        
-        txtAlamat.setText("");        
+        txtNama.setText("");
+        txtNomorHp.setText("");
+        txtAlamat.setText("");
     }
-    
+
     private void performSave() {
         if (!txtNama.getText().isEmpty()) {
             if (JOptionPane.showConfirmDialog(null, "Do you want to save new data ?", "Info", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
                 Pelanggan request = new Pelanggan();
-                request.setId(0L);
                 request.setNama(txtNama.getText());
                 request.setNomorHp(txtNomorHp.getText());
                 request.setAlamat(txtAlamat.getText());
@@ -77,13 +77,13 @@ public class FormPelanggan extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Data not empty", "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
-    
+
     private void performUpdate() {
         if (clickTable) {
             if (!txtAlamat.getText().isEmpty()) {
                 if (JOptionPane.showConfirmDialog(null, "Do you want to update data by id " + defaultTableModel.getValueAt(tabelPelanggan.getSelectedRow(), 0).toString() + " ?", "Warning", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
                     Pelanggan request = new Pelanggan();
-                    request.setId(Long.parseLong(defaultTableModel.getValueAt(tabelPelanggan.getSelectedRow(), 0).toString()));
+                    request.setId(defaultTableModel.getValueAt(tabelPelanggan.getSelectedRow(), 0).toString());
                     request.setNama(txtNama.getText());
                     request.setNomorHp(txtNomorHp.getText());
                     request.setAlamat(txtAlamat.getText());
@@ -99,11 +99,11 @@ public class FormPelanggan extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Delete or edit must click table", "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
-    
+
     private void performDelete() {
         if (clickTable) {
             if (JOptionPane.showConfirmDialog(null, "Do you want to delete data by id " + defaultTableModel.getValueAt(tabelPelanggan.getSelectedRow(), 0).toString() + " ?", "Warning", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
-                pelangganJdbc.delete(Long.parseLong(defaultTableModel.getValueAt(tabelPelanggan.getSelectedRow(), 0).toString()));
+                pelangganJdbc.delete(defaultTableModel.getValueAt(tabelPelanggan.getSelectedRow(), 0).toString());
                 loadTable();
                 empty();
                 JOptionPane.showMessageDialog(null, "Successfully delete data", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -111,7 +111,7 @@ public class FormPelanggan extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(null, "Delete or edit must click table", "Warning", JOptionPane.WARNING_MESSAGE);
         }
-    } 
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -413,8 +413,8 @@ public class FormPelanggan extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
-       new FormMenu().setVisible(true);
-       dispose();
+        new FormMenu().setVisible(true);
+        dispose();
     }//GEN-LAST:event_btnLogoutActionPerformed
 
     private void btnInsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInsertActionPerformed
@@ -438,7 +438,7 @@ public class FormPelanggan extends javax.swing.JFrame {
     }//GEN-LAST:event_tabelPelangganMouseClicked
 
     public static void main(String args[]) {
-        
+
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -446,21 +446,13 @@ public class FormPelanggan extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FormPelanggan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FormPelanggan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FormPelanggan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(FormPelanggan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FormPelanggan().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new FormPelanggan().setVisible(true);
         });
     }
 

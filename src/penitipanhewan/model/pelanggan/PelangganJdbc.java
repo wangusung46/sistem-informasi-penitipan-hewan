@@ -6,12 +6,12 @@ public interface PelangganJdbc {
 
     public List<Pelanggan> selectAll();
     
-    public Pelanggan select(Long request);
+    public Pelanggan select(String request);
 
     public void insert(Pelanggan request);
 
     public void update(Pelanggan request);
     
-    public void delete(Long request);
+    public void delete(String request);
 
 }

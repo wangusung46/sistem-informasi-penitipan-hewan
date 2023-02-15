@@ -7,7 +7,8 @@ import penitipanhewan.model.admin.AdminJdbcImplement;
 
 public class FormRegister extends javax.swing.JFrame {
     
-    private final AdminJdbc adminJdbc;
+    private static AdminJdbc adminJdbc;
+    private static final long serialVersionUID = 1L;
 
     public FormRegister() {
         initComponents();
@@ -106,6 +107,11 @@ public class FormRegister extends javax.swing.JFrame {
         txtLogin.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         txtLogin.setForeground(new java.awt.Color(0, 153, 255));
         txtLogin.setText("Have already an account ? Login here");
+        txtLogin.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtLoginMouseClicked(evt);
+            }
+        });
 
         jLabel9.setBackground(new java.awt.Color(0, 0, 0));
         jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -233,11 +239,11 @@ public class FormRegister extends javax.swing.JFrame {
     private void btnSignupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSignupActionPerformed
         if (!txtNama.getText().isEmpty()) {
             if (!txtUserName.getText().isEmpty()) {
-                if (!txtPassword.getText().isEmpty()) {
+                if (!String.valueOf(txtPassword.getPassword()).isEmpty()) {
                     Admin admin = new Admin();
                     admin.setId(0L);
                     admin.setNama(txtNama.getText());
-                    admin.setPassword(txtPassword.getText());
+                    admin.setPassword(String.valueOf(txtPassword.getPassword()));
                     admin.setUserName(txtUserName.getText());
                     admin.setRole(cbxRole.getSelectedItem().toString());                   
                     adminJdbc.insert(admin);
@@ -257,13 +263,15 @@ public class FormRegister extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnSignupActionPerformed
 
+    private void txtLoginMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtLoginMouseClicked
+        perLogin();
+    }//GEN-LAST:event_txtLoginMouseClicked
+
     public static void main(String args[]) {
         
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FormRegister().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new FormRegister().setVisible(true);
         });
     }
 

@@ -4,18 +4,18 @@ import java.util.Date;
 
 public class Penitipan {
     
-    private Long id;
+    private String id;
     private Long idPaket;
     private Long idPelanggan;
     private Long jumlah;
     private Long jam;
     private Date tanggal;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
