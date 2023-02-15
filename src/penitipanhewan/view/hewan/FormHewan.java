@@ -12,7 +12,7 @@ public class FormHewan extends javax.swing.JFrame {
 
     private static final long serialVersionUID = 1L;
     
-    private final HewanJdbc hewanJdbc;
+    private static HewanJdbc hewanJdbc;
     private Boolean clickTable;
     private DefaultTableModel defaultTableModel;
 
@@ -25,7 +25,7 @@ public class FormHewan extends javax.swing.JFrame {
     
     private void initTable() {
         defaultTableModel = new DefaultTableModel();
-        defaultTableModel.addColumn("No");
+        defaultTableModel.addColumn("ID");
         defaultTableModel.addColumn("Jenis");        
         defaultTableModel.addColumn("Ukuran");        
         defaultTableModel.addColumn("Harga");           
@@ -66,10 +66,9 @@ public class FormHewan extends javax.swing.JFrame {
         if (cbxUkuran.getSelectedItem()!= null) {
             if (JOptionPane.showConfirmDialog(null, "Do you want to save new data ?", "Info", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
                 Hewan request = new Hewan();
-                request.setId(0L);
                 request.setJenis(txtJenis.getText()); 
                 request.setUkuran(cbxUkuran.getSelectedItem().toString()); 
-                request.setHarga(Long.parseLong(txtHarga.getText()));                              
+                request.setHarga(Long.valueOf(txtHarga.getText()));                              
                 hewanJdbc.insert(request);
                 loadTable();
                 empty();
@@ -84,10 +83,10 @@ public class FormHewan extends javax.swing.JFrame {
         if (cbxUkuran.getSelectedItem()!= null) {
             if (JOptionPane.showConfirmDialog(null, "Do you want to update new data ?", "Info", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
                 Hewan request = new Hewan();
-                request.setId(Long.parseLong(defaultTableModel.getValueAt(tabelHewan.getSelectedRow(), 0).toString()));
+                request.setId(defaultTableModel.getValueAt(tabelHewan.getSelectedRow(), 0).toString());
                 request.setJenis(txtJenis.getText()); 
                 request.setUkuran(cbxUkuran.getSelectedItem().toString()); 
-                request.setHarga(Long.parseLong(txtHarga.getText()));                              
+                request.setHarga(Long.valueOf(txtHarga.getText()));                              
                 hewanJdbc.update(request);
                 loadTable();
                 empty();
@@ -101,7 +100,7 @@ public class FormHewan extends javax.swing.JFrame {
     private void performDelete() {
         if (clickTable) {
             if (JOptionPane.showConfirmDialog(null, "Do you want to delete data by id " + defaultTableModel.getValueAt(tabelHewan.getSelectedRow(), 0).toString() + " ?", "Warning", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
-                hewanJdbc.delete(Long.parseLong(defaultTableModel.getValueAt(tabelHewan.getSelectedRow(), 0).toString()));
+                hewanJdbc.delete(defaultTableModel.getValueAt(tabelHewan.getSelectedRow(), 0).toString());
                 loadTable();
                 empty();
                 JOptionPane.showMessageDialog(null, "Successfully delete data", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -208,7 +207,7 @@ public class FormHewan extends javax.swing.JFrame {
         cbxUkuran.setBackground(new java.awt.Color(153, 153, 153));
         cbxUkuran.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
         cbxUkuran.setForeground(new java.awt.Color(255, 255, 255));
-        cbxUkuran.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5" }));
+        cbxUkuran.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5", "6" }));
 
         jLabel5.setBackground(new java.awt.Color(153, 153, 153));
         jLabel5.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N

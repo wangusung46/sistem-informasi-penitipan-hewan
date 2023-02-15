@@ -1,16 +1,19 @@
 package penitipanhewan.model.makanan;
 
 public class Makanan {
-    
-    private Long id;
+
+    private String id;
     private String nama;
     private Long harga;
+    private String merek;
+    private String jenis;
+    private Long ukuran;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -30,9 +33,28 @@ public class Makanan {
         this.harga = harga;
     }
 
-    @Override
-    public String toString() {
-        return "Makanan{" + "id=" + id + ", nama=" + nama + ", harga=" + harga + '}';
+    public String getMerek() {
+        return merek;
     }
-    
+
+    public void setMerek(String merek) {
+        this.merek = merek;
+    }
+
+    public String getJenis() {
+        return jenis;
+    }
+
+    public void setJenis(String jenis) {
+        this.jenis = jenis;
+    }
+
+    public Long getUkuran() {
+        return ukuran;
+    }
+
+    public void setUkuran(Long ukuran) {
+        this.ukuran = ukuran;
+    }
+
 }

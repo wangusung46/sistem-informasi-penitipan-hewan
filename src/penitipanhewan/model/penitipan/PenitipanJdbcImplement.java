@@ -1,23 +1,24 @@
 package penitipanhewan.model.penitipan;
 
-import koneksi.Conn;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
+import koneksi.Conn;
 import org.apache.log4j.Logger;
 
 public class PenitipanJdbcImplement implements PenitipanJdbc {
 
-    private final Connection connection;
+    private static Connection connection;
+    private static final Logger logger = Logger.getLogger(PenitipanJdbcImplement.class);
+    private static final String ID = "T";
+    private static final String FORMAT = "%05d";
     private ResultSet resultSet;
     private PreparedStatement preparedStatement;
     private String sql;
-    private static final Logger logger = Logger.getLogger(PenitipanJdbcImplement.class);
 
     public PenitipanJdbcImplement() {
         connection = Conn.getConnection();
@@ -33,12 +34,12 @@ public class PenitipanJdbcImplement implements PenitipanJdbc {
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 Penitipan penitipan = new Penitipan();
-                penitipan.setId(resultSet.getLong("id"));             
-                penitipan.setIdPaket(resultSet.getLong("id_paket"));               
-                penitipan.setIdPelanggan(resultSet.getLong("id_pelanggan"));                
-                penitipan.setJumlah(resultSet.getLong("jumlah"));                
-                penitipan.setJam(resultSet.getLong("jam"));                
-                penitipan.setTanggal(resultSet.getDate("tanggal"));                
+                penitipan.setId(ID + String.format(FORMAT, resultSet.getLong("id")));
+                penitipan.setIdPaket(resultSet.getLong("id_paket"));
+                penitipan.setIdPelanggan(resultSet.getLong("id_pelanggan"));
+                penitipan.setJumlah(resultSet.getLong("jumlah"));
+                penitipan.setJam(resultSet.getLong("jam"));
+                penitipan.setTanggal(resultSet.getDate("tanggal"));
                 response.add(penitipan);
             }
             resultSet.close();
@@ -51,20 +52,24 @@ public class PenitipanJdbcImplement implements PenitipanJdbc {
             return null;
         }
     }
-    
+
     @Override
-    public Penitipan select(Long request) {
-        logger.debug(request.toString());
+    public Penitipan select(String request) {
+        logger.debug(request);
         Penitipan response = new Penitipan();
         try {
             sql = "select * from penitipan where id = ?;";
             preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setLong(1, request);
+            if (request.substring(0, 1).equals(ID)) {
+                preparedStatement.setLong(1, Long.parseLong(request.substring(1)));
+            } else {
+                preparedStatement.setLong(1, Long.parseLong(request));
+            }
             logger.debug(preparedStatement.toString());
             resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                response.setId(resultSet.getLong("id"));               
-                response.setIdPaket(resultSet.getLong("id_paket"));         
+                response.setId(ID + String.format(FORMAT, resultSet.getLong("id")));
+                response.setIdPaket(resultSet.getLong("id_paket"));
                 response.setIdPelanggan(resultSet.getLong("id_pelanggan"));
                 response.setJumlah(resultSet.getLong("jumlah"));
                 response.setJam(resultSet.getLong("jam"));
@@ -83,12 +88,12 @@ public class PenitipanJdbcImplement implements PenitipanJdbc {
         logger.debug(request.toString());
         try {
             sql = "INSERT INTO penitipan (id_paket, id_pelanggan, jumlah, jam, tanggal) VALUES(?, ?, ?, ?, ?);";
-            preparedStatement = connection.prepareStatement(sql);          
+            preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setLong(1, request.getIdPaket());
-            preparedStatement.setLong(2, request.getIdPelanggan());           
-            preparedStatement.setLong(3, request.getJumlah());           
-            preparedStatement.setLong(4, request.getJam());           
-            preparedStatement.setDate(5, new java.sql.Date(request.getTanggal().getTime()));           
+            preparedStatement.setLong(2, request.getIdPelanggan());
+            preparedStatement.setLong(3, request.getJumlah());
+            preparedStatement.setLong(4, request.getJam());
+            preparedStatement.setDate(5, new java.sql.Date(request.getTanggal().getTime()));
             logger.debug(preparedStatement.toString());
             preparedStatement.executeUpdate();
             preparedStatement.close();
@@ -103,12 +108,12 @@ public class PenitipanJdbcImplement implements PenitipanJdbc {
         try {
             sql = "UPDATE penitipan SET id_paket=?, id_pelanggan=?, jumlah=?, jam=?, tanggal=? WHERE id=?;";
             preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setLong(1, request.getIdPaket());                       
+            preparedStatement.setLong(1, request.getIdPaket());
             preparedStatement.setLong(2, request.getIdPelanggan());
             preparedStatement.setLong(3, request.getJumlah());
             preparedStatement.setLong(4, request.getJam());
-            preparedStatement.setDate(5, (Date) request.getTanggal());
-            preparedStatement.setLong(6, request.getId());
+            preparedStatement.setDate(5, new java.sql.Date(request.getTanggal().getTime()));
+            preparedStatement.setLong(6, Long.parseLong(request.getId().substring(1)));
             logger.debug(preparedStatement.toString());
             preparedStatement.executeUpdate();
             preparedStatement.close();
@@ -119,12 +124,12 @@ public class PenitipanJdbcImplement implements PenitipanJdbc {
     }
 
     @Override
-    public void delete(Long request) {
-        logger.debug(request.toString());
+    public void delete(String request) {
+        logger.debug(request);
         try {
             sql = "DELETE FROM penitipan WHERE id=?;";
             preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setLong(1, request);
+            preparedStatement.setLong(1, Long.parseLong(request.substring(1)));
             logger.debug(preparedStatement.toString());
             preparedStatement.executeUpdate();
             preparedStatement.close();

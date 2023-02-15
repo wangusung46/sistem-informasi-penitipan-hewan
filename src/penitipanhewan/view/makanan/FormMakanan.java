@@ -9,8 +9,9 @@ import penitipanhewan.model.makanan.MakananJdbcImplement;
 import penitipanhewan.view.menu.FormMenu;
 
 public class FormMakanan extends javax.swing.JFrame {
-    
-    private final MakananJdbc makananJdbc;
+
+    private static MakananJdbc makananJdbc;
+    private static final long serialVersionUID = 1L;
     private Boolean clickTable;
     private DefaultTableModel defaultTableModel;
 
@@ -20,49 +21,63 @@ public class FormMakanan extends javax.swing.JFrame {
         initTable();
         loadTable();
     }
-    
+
     private void initTable() {
         defaultTableModel = new DefaultTableModel();
-        defaultTableModel.addColumn("No");
-        defaultTableModel.addColumn("Nama");        
-        defaultTableModel.addColumn("Harga");           
+        defaultTableModel.addColumn("ID");
+        defaultTableModel.addColumn("Nama");
+        defaultTableModel.addColumn("Harga");
+        defaultTableModel.addColumn("Merek");
+        defaultTableModel.addColumn("Jenis");
+        defaultTableModel.addColumn("Ukuran");
         tabelMakanan.setModel(defaultTableModel);
     }
-    
+
     private void loadTable() {
         defaultTableModel.getDataVector().removeAllElements();
         defaultTableModel.fireTableDataChanged();
         List<Makanan> responses = makananJdbc.selectAll();
         if (responses != null) {
-            Object[] objects = new Object[3];
+            Object[] objects = new Object[6];
             for (Makanan response : responses) {
                 objects[0] = response.getId();
-                objects[1] = response.getNama();                
-                objects[2] = response.getHarga();                        
+                objects[1] = response.getNama();
+                objects[2] = response.getHarga();
+                objects[3] = response.getMerek();
+                objects[4] = response.getJenis();
+                objects[5] = response.getUkuran();
                 defaultTableModel.addRow(objects);
             }
             clickTable = false;
         }
     }
-    
+
     private void clickTable() {
         txtNama.setText(defaultTableModel.getValueAt(tabelMakanan.getSelectedRow(), 1).toString());
-        txtHarga.setText(defaultTableModel.getValueAt(tabelMakanan.getSelectedRow(), 2).toString());        
+        txtHarga.setText(defaultTableModel.getValueAt(tabelMakanan.getSelectedRow(), 2).toString());
+        txtMerek.setText(defaultTableModel.getValueAt(tabelMakanan.getSelectedRow(), 3).toString());
+        txtJenis.setText(defaultTableModel.getValueAt(tabelMakanan.getSelectedRow(), 4).toString());
+        cbxUkuran.setSelectedItem(defaultTableModel.getValueAt(tabelMakanan.getSelectedRow(), 5).toString());
         clickTable = true;
     }
-    
+
     private void empty() {
-        txtNama.setText("");        
-        txtHarga.setText("");       
+        txtNama.setText("");
+        txtHarga.setText("");
+        txtMerek.setText("");
+        txtJenis.setText("");
+        cbxUkuran.setSelectedIndex(0);
     }
-    
+
     private void performSave() {
         if (!txtNama.getText().isEmpty()) {
             if (JOptionPane.showConfirmDialog(null, "Do you want to save new data ?", "Info", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
                 Makanan request = new Makanan();
-                request.setId(0L);    
-                request.setNama(txtNama.getText());       
-                request.setHarga(Long.parseLong(txtHarga.getText()));                   
+                request.setNama(txtNama.getText());
+                request.setHarga(Long.valueOf(txtHarga.getText()));
+                request.setMerek(txtMerek.getText());
+                request.setJenis(txtJenis.getText());
+                request.setUkuran(Long.valueOf(cbxUkuran.getSelectedItem().toString()));
                 makananJdbc.insert(request);
                 loadTable();
                 empty();
@@ -72,14 +87,17 @@ public class FormMakanan extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Data not empty", "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
-    
+
     private void performUpdate() {
         if (!txtNama.getText().isEmpty()) {
             if (JOptionPane.showConfirmDialog(null, "Do you want to update new data ?", "Info", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
                 Makanan request = new Makanan();
-                request.setId(Long.parseLong(defaultTableModel.getValueAt(tabelMakanan.getSelectedRow(), 0).toString()));    
-                request.setNama(txtNama.getText());       
-                request.setHarga(Long.parseLong(txtHarga.getText()));                   
+                request.setId(defaultTableModel.getValueAt(tabelMakanan.getSelectedRow(), 0).toString());
+                request.setNama(txtNama.getText());
+                request.setHarga(Long.valueOf(txtHarga.getText()));
+                request.setMerek(txtMerek.getText());
+                request.setJenis(txtJenis.getText());
+                request.setUkuran(Long.valueOf(cbxUkuran.getSelectedItem().toString()));
                 makananJdbc.update(request);
                 loadTable();
                 empty();
@@ -89,11 +107,11 @@ public class FormMakanan extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Data not empty", "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
-    
+
     private void performDelete() {
         if (clickTable) {
             if (JOptionPane.showConfirmDialog(null, "Do you want to delete data by id " + defaultTableModel.getValueAt(tabelMakanan.getSelectedRow(), 0).toString() + " ?", "Warning", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
-                makananJdbc.delete(Long.parseLong(defaultTableModel.getValueAt(tabelMakanan.getSelectedRow(), 0).toString()));
+                makananJdbc.delete(defaultTableModel.getValueAt(tabelMakanan.getSelectedRow(), 0).toString());
                 loadTable();
                 empty();
                 JOptionPane.showMessageDialog(null, "Successfully delete data", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -101,8 +119,7 @@ public class FormMakanan extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(null, "Delete or edit must click table", "Warning", JOptionPane.WARNING_MESSAGE);
         }
-    } 
-
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -129,6 +146,12 @@ public class FormMakanan extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
+        cbxUkuran = new javax.swing.JComboBox<>();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        txtMerek = new javax.swing.JTextField();
+        txtJenis = new javax.swing.JTextField();
+        jLabel11 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("FORM MAKANAN");
@@ -263,25 +286,58 @@ public class FormMakanan extends javax.swing.JFrame {
 
         jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penitipanhewan/image/clear.png"))); // NOI18N
 
+        cbxUkuran.setBackground(new java.awt.Color(153, 153, 153));
+        cbxUkuran.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
+        cbxUkuran.setForeground(new java.awt.Color(255, 255, 255));
+        cbxUkuran.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5", "6" }));
+
+        jLabel9.setBackground(new java.awt.Color(153, 153, 153));
+        jLabel9.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel9.setText("Ukuran :");
+
+        jLabel10.setBackground(new java.awt.Color(153, 153, 153));
+        jLabel10.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel10.setText("Merek :");
+
+        txtMerek.setBackground(new java.awt.Color(153, 153, 153));
+        txtMerek.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
+        txtMerek.setForeground(new java.awt.Color(255, 255, 255));
+
+        txtJenis.setBackground(new java.awt.Color(153, 153, 153));
+        txtJenis.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
+        txtJenis.setForeground(new java.awt.Color(255, 255, 255));
+
+        jLabel11.setBackground(new java.awt.Color(153, 153, 153));
+        jLabel11.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel11.setText("Jenis :");
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addGap(18, 18, 18)
+                .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtNama)
-                            .addComponent(txtHarga, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(60, 60, 60))
+                            .addComponent(txtHarga, javax.swing.GroupLayout.DEFAULT_SIZE, 458, Short.MAX_VALUE)
+                            .addComponent(cbxUkuran, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(txtMerek, javax.swing.GroupLayout.DEFAULT_SIZE, 458, Short.MAX_VALUE)
+                            .addComponent(txtJenis, javax.swing.GroupLayout.DEFAULT_SIZE, 458, Short.MAX_VALUE)
+                            .addComponent(txtNama)))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 445, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel4Layout.createSequentialGroup()
                                 .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -298,21 +354,34 @@ public class FormMakanan extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel4)
-                                    .addComponent(jLabel6))))
-                        .addGap(19, 19, 19))))
+                                    .addComponent(jLabel6))))))
+                .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(28, 28, 28)
+                .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(txtNama, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel5)
                     .addComponent(txtHarga, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(txtMerek, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtJenis, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel11))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(cbxUkuran, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel9)))
+                    .addComponent(jLabel10))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -331,7 +400,7 @@ public class FormMakanan extends javax.swing.JFrame {
                             .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnClear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addContainerGap(25, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -342,12 +411,12 @@ public class FormMakanan extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(43, 43, 43)
+                        .addContainerGap()
                         .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(327, 327, 327)
                         .addComponent(jLabel2)))
-                .addContainerGap(28, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -401,8 +470,8 @@ public class FormMakanan extends javax.swing.JFrame {
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
-       new FormMenu().setVisible(true);
-       dispose();
+        new FormMenu().setVisible(true);
+        dispose();
     }//GEN-LAST:event_btnLogoutActionPerformed
 
     private void btnInsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInsertActionPerformed
@@ -422,7 +491,7 @@ public class FormMakanan extends javax.swing.JFrame {
     }//GEN-LAST:event_tabelMakananMouseClicked
 
     public static void main(String args[]) {
-        
+
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -430,13 +499,7 @@ public class FormMakanan extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FormMakanan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FormMakanan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FormMakanan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(FormMakanan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
@@ -454,7 +517,10 @@ public class FormMakanan extends javax.swing.JFrame {
     private javax.swing.JButton btnInsert;
     private javax.swing.JButton btnLogout;
     private javax.swing.JButton btnUpdate;
+    private javax.swing.JComboBox<String> cbxUkuran;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -462,6 +528,7 @@ public class FormMakanan extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -469,6 +536,8 @@ public class FormMakanan extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tabelMakanan;
     private javax.swing.JTextField txtHarga;
+    private javax.swing.JTextField txtJenis;
+    private javax.swing.JTextField txtMerek;
     private javax.swing.JTextField txtNama;
     // End of variables declaration//GEN-END:variables
 }

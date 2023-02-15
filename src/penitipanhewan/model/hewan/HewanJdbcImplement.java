@@ -1,6 +1,5 @@
 package penitipanhewan.model.hewan;
 
-import koneksi.Conn;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,15 +7,18 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
+import koneksi.Conn;
 import org.apache.log4j.Logger;
 
 public class HewanJdbcImplement implements HewanJdbc {
 
-    private final Connection connection;
+    private static Connection connection;
+    private static final Logger logger = Logger.getLogger(HewanJdbcImplement.class);
+    private static final String ID = "H";
+    private static final String FORMAT = "%05d";
     private ResultSet resultSet;
     private PreparedStatement preparedStatement;
     private String sql;
-    private static final Logger logger = Logger.getLogger(HewanJdbcImplement.class);
 
     public HewanJdbcImplement() {
         connection = Conn.getConnection();
@@ -32,10 +34,10 @@ public class HewanJdbcImplement implements HewanJdbc {
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 Hewan hewan = new Hewan();
-                hewan.setId(resultSet.getLong("id"));                
+                hewan.setId(ID + String.format(FORMAT, resultSet.getLong("id")));
                 hewan.setJenis(resultSet.getString("jenis"));
-                hewan.setUkuran(resultSet.getString("ukuran"));               
-                hewan.setHarga(resultSet.getLong("harga"));                
+                hewan.setUkuran(resultSet.getString("ukuran"));
+                hewan.setHarga(resultSet.getLong("harga"));
                 response.add(hewan);
             }
             resultSet.close();
@@ -48,20 +50,24 @@ public class HewanJdbcImplement implements HewanJdbc {
             return null;
         }
     }
-    
+
     @Override
-    public Hewan select(Long request) {
-        logger.debug(request.toString());
+    public Hewan select(String request) {
+        logger.debug(request);
         Hewan response = new Hewan();
         try {
             sql = "select * from hewan where id = ?;";
             preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setLong(1, request);
+            if (request.substring(0, 1).equals(ID)) {
+                preparedStatement.setLong(1, Long.parseLong(request.substring(1)));
+            } else {
+                preparedStatement.setLong(1, Long.parseLong(request));
+            }
             logger.debug(preparedStatement.toString());
             resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                response.setId(resultSet.getLong("id"));               
-                response.setJenis(resultSet.getString("jenis"));               
+                response.setId(ID + String.format(FORMAT, resultSet.getLong("id")));
+                response.setJenis(resultSet.getString("jenis"));
                 response.setUkuran(resultSet.getString("ukuran"));
                 response.setHarga(resultSet.getLong("harga"));
             }
@@ -78,10 +84,10 @@ public class HewanJdbcImplement implements HewanJdbc {
         logger.debug(request.toString());
         try {
             sql = "INSERT INTO hewan (jenis, ukuran, harga) VALUES(?, ?, ?);";
-            preparedStatement = connection.prepareStatement(sql);           
+            preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, request.getJenis());
             preparedStatement.setString(2, request.getUkuran());
-            preparedStatement.setLong(3, request.getHarga());           
+            preparedStatement.setLong(3, request.getHarga());
             logger.debug(preparedStatement.toString());
             preparedStatement.executeUpdate();
             preparedStatement.close();
@@ -97,9 +103,9 @@ public class HewanJdbcImplement implements HewanJdbc {
             sql = "UPDATE hewan SET jenis=?, ukuran=?, harga=? WHERE id=?;";
             preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, request.getJenis());
-            preparedStatement.setString(2, request.getUkuran());           
+            preparedStatement.setString(2, request.getUkuran());
             preparedStatement.setLong(3, request.getHarga());
-            preparedStatement.setLong(4, request.getId());
+            preparedStatement.setString(4, request.getId().substring(1));
             logger.debug(preparedStatement.toString());
             preparedStatement.executeUpdate();
             preparedStatement.close();
@@ -110,12 +116,12 @@ public class HewanJdbcImplement implements HewanJdbc {
     }
 
     @Override
-    public void delete(Long request) {
-        logger.debug(request.toString());
+    public void delete(String request) {
+        logger.debug(request);
         try {
             sql = "DELETE FROM hewan WHERE id=?;";
             preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setLong(1, request);
+            preparedStatement.setLong(1, Long.parseLong(request.substring(1)));
             logger.debug(preparedStatement.toString());
             preparedStatement.executeUpdate();
             preparedStatement.close();

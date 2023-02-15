@@ -16,37 +16,36 @@ import penitipanhewan.model.penitipan.PenitipanJdbcImplement;
 import penitipanhewan.view.menu.FormMenu;
 
 public class FormPenitipan extends javax.swing.JFrame {
-    
+
     private static final long serialVersionUID = 1L;
-    
-    private final PenitipanJdbc penitipanJdbc;
-    private final PelangganJdbc pelangganJdbc;
-    private final PaketJdbc paketJdbc;
+    private static PenitipanJdbc penitipanJdbc;
+    private static PelangganJdbc pelangganJdbc;
+    private static PaketJdbc paketJdbc;
     private Boolean clickTable;
     private DefaultTableModel defaultTableModel;
-    
+
     public FormPenitipan() {
         initComponents();
         penitipanJdbc = new PenitipanJdbcImplement();
         paketJdbc = new PaketJdbcImplement();
-        pelangganJdbc = new PelangganJdbcImplement();        
+        pelangganJdbc = new PelangganJdbcImplement();
         initTable();
         loadTable();
         loadComboBoxPaket();
-        loadComboBoxPelanggan();        
+        loadComboBoxPelanggan();
     }
-    
+
     private void initTable() {
         defaultTableModel = new DefaultTableModel();
-        defaultTableModel.addColumn("No");
-        defaultTableModel.addColumn("ID Paket");
-        defaultTableModel.addColumn("ID Pelanggan");        
-        defaultTableModel.addColumn("Jumlah");        
-        defaultTableModel.addColumn("Jam");        
-        defaultTableModel.addColumn("Tangggal");        
+        defaultTableModel.addColumn("ID");
+        defaultTableModel.addColumn("Nama Paket");
+        defaultTableModel.addColumn("Nama Pelanggan");
+        defaultTableModel.addColumn("Jumlah");
+        defaultTableModel.addColumn("Jam");
+        defaultTableModel.addColumn("Tangggal");
         tabelPenitipan.setModel(defaultTableModel);
     }
-    
+
     private void loadTable() {
         defaultTableModel.getDataVector().removeAllElements();
         defaultTableModel.fireTableDataChanged();
@@ -55,65 +54,67 @@ public class FormPenitipan extends javax.swing.JFrame {
             Object[] objects = new Object[6];
             for (Penitipan response : responses) {
                 objects[0] = response.getId();
-                objects[1] = response.getIdPaket();
-                objects[2] = response.getIdPelanggan();                
-                objects[3] = response.getJumlah();                
-                objects[4] = response.getJam();                
-                objects[5] = response.getTanggal();                
+                objects[1] = paketJdbc.select(response.getIdPaket().toString()).getNama();
+                objects[2] = pelangganJdbc.select(response.getIdPelanggan().toString()).getNama();
+                objects[3] = response.getJumlah();
+                objects[4] = response.getJam();
+                objects[5] = response.getTanggal();
                 defaultTableModel.addRow(objects);
             }
             clickTable = false;
         }
     }
-    
+
     private void loadComboBoxPaket() {
         List<Paket> responses = paketJdbc.selectAll();
         for (Paket response : responses) {
             cbxIdPaket.addItem(String.valueOf(response.getId()));
         }
     }
-    
+
     private void loadComboBoxPelanggan() {
         List<Pelanggan> responses = pelangganJdbc.selectAll();
         for (Pelanggan response : responses) {
             cbxIdPelanggan.addItem(String.valueOf(response.getId()));
         }
     }
-    
+
     private void loadPaket() {
-        Paket response = paketJdbc.select(Long.parseLong(cbxIdPaket.getSelectedItem().toString()));
+        Paket response = paketJdbc.select(cbxIdPaket.getSelectedItem().toString().substring(1));
         txtNamaPaket.setText(response.getNama());
     }
-    
+
     private void loadPelanggan() {
-        Pelanggan response = pelangganJdbc.select(Long.parseLong(cbxIdPelanggan.getSelectedItem().toString()));
+        Pelanggan response = pelangganJdbc.select(cbxIdPelanggan.getSelectedItem().toString().substring(1));
         txtNamaPelanggan.setText(response.getNama());
     }
-    
+
     private void clickTable() {
-        cbxIdPaket.setSelectedItem(defaultTableModel.getValueAt(tabelPenitipan.getSelectedRow(), 1).toString());
-        cbxIdPelanggan.setSelectedItem(defaultTableModel.getValueAt(tabelPenitipan.getSelectedRow(), 2).toString());        
+        cbxIdPaket.setSelectedItem(paketJdbc.select(penitipanJdbc.select(defaultTableModel.getValueAt(tabelPenitipan.getSelectedRow(), 0).toString()).getIdPaket().toString()).getId());
+        cbxIdPelanggan.setSelectedItem(pelangganJdbc.select(penitipanJdbc.select(defaultTableModel.getValueAt(tabelPenitipan.getSelectedRow(), 0).toString()).getIdPelanggan().toString()).getId());
+        txtJumlah.setText(penitipanJdbc.select(defaultTableModel.getValueAt(tabelPenitipan.getSelectedRow(), 0).toString()).getJumlah().toString());
+        txtJam.setText(penitipanJdbc.select(defaultTableModel.getValueAt(tabelPenitipan.getSelectedRow(), 0).toString()).getJam().toString());
+        datePenitipan.setDate(penitipanJdbc.select(defaultTableModel.getValueAt(tabelPenitipan.getSelectedRow(), 0).toString()).getTanggal());
         clickTable = true;
     }
-    
+
     private void empty() {
-        cbxIdPaket.setSelectedIndex(0);        
-        cbxIdPelanggan.setSelectedIndex(0);        
-        txtJumlah.setText("");        
-        txtJam.setText("");        
-        datePenitipan.setDate(null);        
+        cbxIdPaket.setSelectedIndex(0);
+        cbxIdPelanggan.setSelectedIndex(0);
+        txtJumlah.setText("");
+        txtJam.setText("");
+        datePenitipan.setDate(null);
     }
-    
+
     private void performSave() {
         if (datePenitipan.getDate() != null) {
             if (JOptionPane.showConfirmDialog(null, "Do you want to save new data ?", "Info", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
                 Penitipan request = new Penitipan();
-                request.setId(0L);
-                request.setIdPaket(Long.parseLong(cbxIdPaket.getSelectedItem().toString()));
-                request.setIdPelanggan(Long.parseLong(cbxIdPelanggan.getSelectedItem().toString()));
-                request.setJumlah(Long.parseLong(txtJumlah.getText()));
-                request.setJam(Long.parseLong(txtJam.getText()));
-                request.setTanggal(datePenitipan.getDate());                
+                request.setIdPaket(Long.valueOf(cbxIdPaket.getSelectedItem().toString().substring(1)));
+                request.setIdPelanggan(Long.valueOf(cbxIdPelanggan.getSelectedItem().toString().substring(1)));
+                request.setJumlah(Long.valueOf(txtJumlah.getText()));
+                request.setJam(Long.valueOf(txtJam.getText()));
+                request.setTanggal(datePenitipan.getDate());
                 penitipanJdbc.insert(request);
                 loadTable();
                 empty();
@@ -123,19 +124,19 @@ public class FormPenitipan extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Data not empty", "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
-    
+
     private void performUpdate() {
         if (clickTable) {
             if (datePenitipan.getDate() != null) {
                 if (JOptionPane.showConfirmDialog(null, "Do you want to update data by id " + defaultTableModel.getValueAt(tabelPenitipan.getSelectedRow(), 0).toString() + " ?", "Warning", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
                     Penitipan request = new Penitipan();
-                    request.setId(Long.parseLong(defaultTableModel.getValueAt(tabelPenitipan.getSelectedRow(), 0).toString()));
-                    request.setIdPaket(Long.parseLong(cbxIdPaket.getSelectedItem().toString()));
-                    request.setIdPelanggan(Long.parseLong(cbxIdPelanggan.getSelectedItem().toString()));
-                    request.setJumlah(Long.parseLong(txtJumlah.getText()));
-                    request.setJam(Long.parseLong(txtJam.getText()));
-                    request.setTanggal(datePenitipan.getDate());                    
-                    penitipanJdbc.insert(request);
+                    request.setId(defaultTableModel.getValueAt(tabelPenitipan.getSelectedRow(), 0).toString());
+                    request.setIdPaket(Long.valueOf(cbxIdPaket.getSelectedItem().toString().substring(1)));
+                    request.setIdPelanggan(Long.valueOf(cbxIdPelanggan.getSelectedItem().toString().substring(1)));
+                    request.setJumlah(Long.valueOf(txtJumlah.getText()));
+                    request.setJam(Long.valueOf(txtJam.getText()));
+                    request.setTanggal(datePenitipan.getDate());
+                    penitipanJdbc.update(request);
                     loadTable();
                     empty();
                     JOptionPane.showMessageDialog(null, "Successfully update data", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -147,11 +148,11 @@ public class FormPenitipan extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Delete or edit must click table", "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
-    
+
     private void performDelete() {
         if (clickTable) {
             if (JOptionPane.showConfirmDialog(null, "Do you want to delete data by id " + defaultTableModel.getValueAt(tabelPenitipan.getSelectedRow(), 0).toString() + " ?", "Warning", JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
-                penitipanJdbc.delete(Long.parseLong(defaultTableModel.getValueAt(tabelPenitipan.getSelectedRow(), 0).toString()));
+                penitipanJdbc.delete(defaultTableModel.getValueAt(tabelPenitipan.getSelectedRow(), 0).toString());
                 loadTable();
                 empty();
                 JOptionPane.showMessageDialog(null, "Successfully delete data", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -160,13 +161,13 @@ public class FormPenitipan extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Delete or edit must click table", "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
-    
+
     private void filterNumber(KeyEvent keyEvent) {
         if (!Character.isDigit(keyEvent.getKeyChar())) {
             keyEvent.consume();
         }
     }
-    
+
     private void total() {
         if (txtJumlah.getText().isEmpty()) {
             txtJumlah.setText("0");
@@ -174,10 +175,10 @@ public class FormPenitipan extends javax.swing.JFrame {
         if (txtJam.getText().isEmpty()) {
             txtJam.setText("0");
         }
-        Long harga = paketJdbc.selectHarga(Long.parseLong(cbxIdPaket.getSelectedItem().toString()));
-        txtTotal.setText(String.valueOf(harga * Long.parseLong(txtJam.getText()) * Long.parseLong(txtJumlah.getText())));
+        Long harga = paketJdbc.selectHarga(cbxIdPaket.getSelectedItem().toString());
+        txtTotal.setText(String.valueOf(harga * Long.valueOf(txtJam.getText()) * Long.parseLong(txtJumlah.getText())));
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -624,9 +625,9 @@ public class FormPenitipan extends javax.swing.JFrame {
     private void txtJamKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtJamKeyReleased
         total();
     }//GEN-LAST:event_txtJamKeyReleased
-    
+
     public static void main(String args[]) {
-        
+
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {

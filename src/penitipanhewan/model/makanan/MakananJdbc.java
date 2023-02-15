@@ -6,12 +6,12 @@ public interface MakananJdbc {
 
     public List<Makanan> selectAll();
     
-    public Makanan select(Long request);
+    public Makanan select(String request);
 
     public void insert(Makanan request);
 
     public void update(Makanan request);
     
-    public void delete(Long request);
+    public void delete(String request);
 
 }
