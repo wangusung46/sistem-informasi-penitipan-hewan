@@ -4,6 +4,7 @@ import penitipanhewan.model.admin.Admin;
 import penitipanhewan.view.hewan.FormHewan;
 import penitipanhewan.view.makanan.FormMakanan;
 import penitipanhewan.view.paket.FormPaket;
+import penitipanhewan.view.pelanggan.FormPelanggan;
 import penitipanhewan.view.penitipan.FormPenitipan;
 import penitipanhewan.view.report.FormReport;
 
@@ -270,7 +271,7 @@ public class FormMenu extends javax.swing.JFrame {
     }//GEN-LAST:event_btnPaketActionPerformed
 
     private void btnPelangganActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPelangganActionPerformed
-       new FormPaket().setVisible(true);
+       new FormPelanggan().setVisible(true);
        dispose();
     }//GEN-LAST:event_btnPelangganActionPerformed
 
